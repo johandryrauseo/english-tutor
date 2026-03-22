@@ -237,13 +237,16 @@ function toggleMic(){
     showTs('🎤 Habla... toca ⏹️ cuando termines');
   };
   rec.onresult=function(e){
-    var interim='';
-    for(var i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal)finalTxt+=e.results[i][0].transcript+' ';
+    // Reconstruir desde cero cada vez para evitar duplicados
+    var final='', interim='';
+    for(var i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript+' ';
       else interim+=e.results[i][0].transcript;
     }
-    showTs('🎤 '+(finalTxt+interim).trim());
-    document.getElementById('msgIn').value=(finalTxt+interim).trim();
+    finalTxt=final; // reemplazar, nunca acumular
+    var display=(final+interim).trim();
+    showTs('🎤 '+display);
+    document.getElementById('msgIn').value=display;
   };
   rec.onerror=function(e){
     if(e.error==='no-speech')return; // ignora pausas silenciosas
