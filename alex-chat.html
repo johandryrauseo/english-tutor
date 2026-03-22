@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Habla con Alex</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f0;height:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:fixed;width:100%;top:0;left:0;}
+
+/* HEADER */
+.top{background:#111122;border-bottom:1px solid #1e1e3a;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.alex-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;}
+.alex-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;background:#4ade80;border-radius:50%;border:2px solid #111122;}
+.alex-av.speaking::after{background:#a855f7;animation:pulse .6s infinite;}
+.alex-av.listening::after{background:#ef4444;animation:pulse .5s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+.top-info h2{font-size:.95rem;color:#fff;}
+.top-info p{font-size:.7rem;color:#8888aa;}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.voice-sw{display:flex;align-items:center;gap:5px;font-size:.68rem;color:#7777aa;}
+.sw{position:relative;width:32px;height:17px;cursor:pointer;}
+.sw input{opacity:0;width:0;height:0;position:absolute;}
+.sw-track{position:absolute;inset:0;background:#2a2a4a;border-radius:9px;transition:.3s;}
+.sw input:checked+.sw-track{background:#6c63ff;}
+.sw-thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:.3s;pointer-events:none;}
+.sw input:checked~.sw-thumb{left:17px;}
+.status-pill{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:20px;padding:4px 10px;font-size:.67rem;color:#7777aa;display:flex;align-items:center;gap:5px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:#4ade80;}
+.sdot.talk{background:#a855f7;animation:pulse .7s infinite;}
+.sdot.listen{background:#ef4444;animation:pulse .6s infinite;}
+
+/* SETUP overlay */
+.setup{position:fixed;inset:0;background:#0a0a14;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;gap:16px;}
+.setup-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:4px;}
+.setup h1{font-size:1.4rem;color:#fff;text-align:center;}
+.setup p{font-size:.85rem;color:#9999bb;text-align:center;line-height:1.6;max-width:340px;}
+.setup-card{background:#111122;border:1px solid #2a2a4a;border-radius:16px;padding:20px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;}
+.setup-card label{font-size:.8rem;color:#ccccee;}
+.setup-card .steps{font-size:.75rem;color:#9999bb;line-height:1.8;}
+.key-in{background:#0a0a14;border:2px solid #6c63ff;border-radius:10px;padding:11px 14px;color:#e8e8f0;font-size:.88rem;outline:none;font-family:inherit;width:100%;}
+.key-in:focus{border-color:#a855f7;}
+.btn-start{background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:12px;padding:14px;color:#fff;font-size:1rem;cursor:pointer;font-weight:700;width:100%;letter-spacing:.02em;}
+.btn-start:active{opacity:.85;}
+.privacy{font-size:.7rem;color:#555577;text-align:center;}
+
+/* TOPIC SELECTOR */
+.topic-sel{background:#111122;border-top:1px solid #1e1e3a;padding:7px 12px;flex-shrink:0;}
+.topic-sel p{font-size:.68rem;color:#7777aa;margin-bottom:5px;text-align:center;}
+.topics{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.topics::-webkit-scrollbar{display:none;}
+.topic-chip{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:20px;padding:6px 14px;font-size:.73rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;}
+.topic-chip.active{background:#252548;border-color:#6c63ff;color:#a78bfa;}
+.topic-chip:active{border-color:#6c63ff88;}
+
+/* MESSAGES */
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:14px;}
+.msgs::-webkit-scrollbar{width:3px;}
+.msgs::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:2px;}
+
+.msg{display:flex;gap:10px;max-width:88%;}
+.msg.u{align-self:flex-end;flex-direction:row-reverse;}
+.mav{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.msg.u .mav{background:#252548;}
+
+.mbub{border-radius:16px;padding:10px 14px;font-size:.86rem;line-height:1.7;position:relative;}
+.msg:not(.u) .mbub{background:#111122;border:1px solid #1e1e3a;border-top-left-radius:4px;}
+.msg.u .mbub{background:linear-gradient(135deg,#3a3080,#5a4abb);border:none;border-top-right-radius:4px;color:#fff;}
+
+/* Bilingual styling */
+.en{color:#e8e8f0;font-weight:500;}
+.es-line{color:#8888bb;font-size:.8rem;margin-top:3px;font-style:italic;}
+.word-tip{display:inline-block;background:#1e1e38;border:1px solid #6c63ff33;border-radius:6px;padding:2px 8px;margin-top:5px;font-size:.73rem;color:#a78bfa;}
+
+/* Typing */
+.typing-wrap{display:flex;gap:10px;max-width:88%;}
+.typing-bub{background:#111122;border:1px solid #1e1e3a;border-radius:16px;border-top-left-radius:4px;padding:10px 14px;}
+.typing{display:flex;gap:5px;align-items:center;}
+.typing span{width:7px;height:7px;background:#6c63ff;border-radius:50%;animation:tb 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+
+/* BOTTOM INPUT */
+.bottom{background:#111122;border-top:1px solid #1e1e3a;padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
+.mic-btn{width:48px;height:48px;border-radius:50%;border:2px solid #2a2a4a;cursor:pointer;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .25s;}
+.mic-btn.on{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:#ef4444;animation:micP 1s infinite;}
+@keyframes micP{0%,100%{box-shadow:0 0 0 0 #ef444444;}50%{box-shadow:0 0 0 8px #ef444400;}}
+.text-area-wrap{flex:1;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;}
+.text-area-wrap:focus-within{border-color:#6c63ff44;}
+textarea.msg-in{flex:1;background:none;border:none;outline:none;color:#e8e8f0;font-size:.85rem;font-family:inherit;resize:none;height:28px;max-height:80px;line-height:1.4;}
+textarea.msg-in::placeholder{color:#444466;}
+.send-btn{width:34px;height:34px;background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:50%;cursor:pointer;font-size:14px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.send-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* Transcript bar */
+.transcript{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:6px 12px;font-size:.75rem;color:#8888aa;font-style:italic;margin-bottom:6px;min-height:28px;display:none;}
+.transcript.show{display:block;}
+
+/* Quick replies */
+.quick-replies{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 0 2px;margin-bottom:3px;}
+.quick-replies::-webkit-scrollbar{display:none;}
+.qr{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:5px 12px;font-size:.71rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.qr:active{border-color:#6c63ff;color:#a78bfa;}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div class="setup" id="setup">
+  <div class="setup-av">🤖</div>
+  <h1>Hola, soy Alex 👋</h1>
+  <p>Tu amigo bilingüe. Te hablo en inglés <strong>y</strong> español para que vayas aprendiendo poco a poco, como si hablaras con una persona real.</p>
+  <div class="setup-card">
+    <label>🔑 Para activarme necesitas una API Key de Groq (gratis)</label>
+    <div class="steps">1. Ve a <strong>console.groq.com</strong><br>2. Crea cuenta gratuita (sin tarjeta)<br>3. API Keys → Create API Key<br>4. Pega aquí 👇</div>
+    <input class="key-in" id="keyIn" type="text" placeholder="gsk_..."/>
+    <button class="btn-start" onclick="iniciar()">¡Empezar a hablar! 🚀</button>
+  </div>
+  <p class="privacy">🔒 Tu key se guarda solo en este navegador</p>
+</div>
+
+<!-- MAIN -->
+<div class="top">
+  <div class="alex-av" id="alexAv">🤖</div>
+  <div class="top-info">
+    <h2>Alex</h2>
+    <p id="topStatus">Tu amigo bilingüe · En línea</p>
+  </div>
+  <div class="top-right">
+    <div class="voice-sw">
+      <span>Voz</span>
+      <label class="sw"><input type="checkbox" id="ttsOn" checked><div class="sw-track"></div><div class="sw-thumb"></div></label>
+    </div>
+    <div class="status-pill"><div class="sdot" id="sdot"></div><span id="stxt">Listo</span></div>
+  </div>
+</div>
+
+<div class="topic-sel">
+  <p>¿De qué quieres hablar?</p>
+  <div class="topics" id="topicBar">
+    <div class="topic-chip active" onclick="setTopic(this,'free')">💬 Libre</div>
+    <div class="topic-chip" onclick="setTopic(this,'greetings')">👋 Saludos</div>
+    <div class="topic-chip" onclick="setTopic(this,'shopping')">🛒 Compras</div>
+    <div class="topic-chip" onclick="setTopic(this,'restaurant')">🍽️ Restaurante</div>
+    <div class="topic-chip" onclick="setTopic(this,'travel')">✈️ Viajes</div>
+    <div class="topic-chip" onclick="setTopic(this,'work')">💼 Trabajo</div>
+    <div class="topic-chip" onclick="setTopic(this,'family')">👨‍👩‍👧 Familia</div>
+    <div class="topic-chip" onclick="setTopic(this,'health')">🏥 Salud</div>
+    <div class="topic-chip" onclick="setTopic(this,'weather')">⛅ Clima</div>
+  </div>
+</div>
+
+<div class="msgs" id="msgs"></div>
+
+<div class="bottom">
+  <div class="transcript" id="transcript"></div>
+  <div class="quick-replies" id="quickR"></div>
+  <div class="input-row">
+    <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
+    <div class="text-area-wrap">
+      <textarea class="msg-in" id="msgIn" placeholder="Escribe en inglés, español, o mezcla los dos..." rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="send()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var API_KEY='', curTopic='free', chatHistory=[];
+var isListening=false, isSpeaking=false;
+var recognition=null, synth=window.speechSynthesis||null, engVoice=null;
+
+// ── VOICES ──────────────────────────────────
+function loadVoices(){
+  if(!synth)return;
+  var vs=synth.getVoices();
+  engVoice=vs.find(function(v){return v.lang==='en-US'&&/samantha|zira|susan|female/i.test(v.name);})||
+           vs.find(function(v){return v.lang==='en-US';})||
+           vs.find(function(v){return v.lang&&v.lang.startsWith('en');})||null;
+}
+if(synth){loadVoices();if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=loadVoices;}
+
+function speakText(text){
+  if(!document.getElementById('ttsOn').checked||!synth)return;
+  // Extract only English lines (not Spanish translations)
+  var lines=text.split('\n');
+  var enLines=lines.filter(function(l){
+    return l.trim()&&!l.trim().startsWith('🇪🇸')&&!l.trim().startsWith('💡')&&!l.trim().startsWith('//');
+  });
+  var clean=enLines.join(' ')
+    .replace(/\([^)]{0,120}\)/g,'')
+    .replace(/\*([^*]+)\*/g,'$1')
+    .replace(/<[^>]+>/g,'')
+    .replace(/[🎉✅❌💡🎤🇪🇸👋🛒🍽️✈️💼👨‍👩‍👧🏥⛅😊😄🙌]/g,'')
+    .replace(/\s+/g,' ').trim();
+  if(!clean)return;
+  synth.cancel();
+  var u=new SpeechSynthesisUtterance(clean);
+  u.lang='en-US';u.rate=0.84;u.pitch=1.05;
+  if(engVoice)u.voice=engVoice;
+  u.onstart=function(){isSpeaking=true;setStatus('speak');document.getElementById('alexAv').classList.add('speaking');};
+  u.onend=u.onerror=function(){isSpeaking=false;setStatus('idle');document.getElementById('alexAv').classList.remove('speaking');};
+  synth.speak(u);
+}
+
+// ── MIC ─────────────────────────────────────
+var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+function toggleMic(){
+  if(!SpeechRec){alert('Usa Google Chrome para hablar por voz.');return;}
+  if(isListening){recognition.stop();return;}
+  if(isSpeaking&&synth)synth.cancel();
+  recognition=new SpeechRec();
+  recognition.lang='en-US';recognition.continuous=false;recognition.interimResults=true;
+  recognition.onstart=function(){
+    isListening=true;
+    document.getElementById('micBtn').classList.add('on');
+    document.getElementById('alexAv').classList.add('listening');
+    setStatus('listen');
+    showTranscript('🎤 Escuchando...');
+  };
+  recognition.onresult=function(e){
+    var f='',i='';
+    for(var x=e.resultIndex;x<e.results.length;x++){
+      if(e.results[x].isFinal)f+=e.results[x][0].transcript;
+      else i+=e.results[x][0].transcript;
+    }
+    showTranscript(f||i||'...');
+    if(f)document.getElementById('msgIn').value=f;
+  };
+  recognition.onend=function(){
+    isListening=false;
+    document.getElementById('micBtn').classList.remove('on');
+    document.getElementById('alexAv').classList.remove('listening');
+    setStatus('idle');
+    hideTranscript();
+    var t=document.getElementById('msgIn').value.trim();
+    if(t)send();
+  };
+  recognition.onerror=function(e){
+    isListening=false;
+    document.getElementById('micBtn').classList.remove('on');
+    document.getElementById('alexAv').classList.remove('listening');
+    setStatus('idle');
+    var m={'not-allowed':'⚠️ Permiso de micrófono denegado.','no-speech':'No se detectó voz.'};
+    showTranscript(m[e.error]||'Error: '+e.error);
+    setTimeout(hideTranscript,2500);
+  };
+  try{recognition.start();}catch(e){showTranscript('Error al iniciar micrófono.');}
+}
+
+function showTranscript(t){var el=document.getElementById('transcript');el.textContent=t;el.classList.add('show');}
+function hideTranscript(){document.getElementById('transcript').classList.remove('show');}
+
+function setStatus(mode){
+  var dot=document.getElementById('sdot');
+  var txt=document.getElementById('stxt');
+  var top=document.getElementById('topStatus');
+  if(mode==='speak'){dot.className='sdot talk';txt.textContent='Hablando...';top.textContent='Alex está hablando...';}
+  else if(mode==='listen'){dot.className='sdot listen';txt.textContent='Escuchando...';top.textContent='Escuchando...';}
+  else if(mode==='think'){dot.className='sdot talk';txt.textContent='Pensando...';top.textContent='Alex está pensando...';}
+  else{dot.className='sdot';txt.textContent='Listo';top.textContent='Tu amigo bilingüe · En línea';}
+}
+
+// ── TOPICS ──────────────────────────────────
+var TOPIC_CONTEXTS={
+  free:'Conversación libre y natural.',
+  greetings:'El estudiante quiere practicar saludos y presentaciones.',
+  shopping:'El estudiante quiere practicar vocabulario de compras.',
+  restaurant:'El estudiante quiere practicar en un restaurante.',
+  travel:'El estudiante quiere practicar viajes, aeropuerto y hotel.',
+  work:'El estudiante quiere practicar inglés para el trabajo.',
+  family:'El estudiante quiere practicar cómo hablar de su familia.',
+  health:'El estudiante quiere practicar vocabulario de salud.',
+  weather:'El estudiante quiere practicar cómo hablar del clima.',
+};
+
+var SYSTEM=`Eres Alex, un amigo bilingüe (inglés-español) que ayuda a alguien a aprender inglés de forma natural.
+
+TU PERSONALIDAD:
+- Eres amigable, divertido y relajado — como un amigo real, no un maestro formal
+- Hablas de forma natural, con energía y entusiasmo
+- A veces usas expresiones coloquiales para que el aprendizaje sea real
+
+CÓMO HABLAS — REGLA PRINCIPAL:
+Cada cosa que dices la escribes en DOS líneas:
+Línea 1 (inglés): La frase en inglés, natural y conversacional
+Línea 2 (🇪🇸 español): La misma idea en español, para que entienda
+
+Ejemplo:
+"Hey! How's it going? 😊
+🇪🇸 ¡Hola! ¿Cómo te va?"
+
+REGLAS ADICIONALES:
+1. Resalta palabras clave con *asteriscos* para que las memorice
+2. Cuando uses una palabra nueva o difícil, agrega al final: 💡 *palabra* = significado
+3. Si el estudiante comete un error, corrígelo de forma natural y amigable:
+   "Almost! We say '*I am*' not 'I is' — in English 'am' is only for 'I' 😊
+   🇪🇸 ¡Casi! Se dice 'I am' no 'I is' — en inglés 'am' solo va con 'I'"
+4. Si el estudiante escribe en español, respóndele mostrando cómo se dice en inglés primero
+5. Mantén respuestas cortas (3-5 líneas) para que sean fáciles de leer y escuchar
+6. SIEMPRE termina con una pregunta simple para mantener la conversación
+7. Varía tu energía — a veces di "That's awesome!", "Oh nice!", "Really?", "No way!" para sonar real
+8. NUNCA respondas solo en inglés sin la traducción al español`;
+
+var QUICK_BY_TOPIC={
+  free:['Hello! 👋','How are you?','I don\'t understand','Can you repeat?','What does that mean?'],
+  greetings:['Hello! Nice to meet you!','My name is...','Where are you from?','How are you?','See you later!'],
+  shopping:['How much is this?','I\'ll take it!','Too expensive!','Do you have my size?','Can I pay by card?'],
+  restaurant:['Table for two, please.','What do you recommend?','I\'ll have the chicken.','The bill, please!','It\'s delicious!'],
+  travel:['I have a reservation.','Where is gate 12?','I need a taxi.','Do you have WiFi?','My luggage is lost!'],
+  work:['Good morning!','I have a question.','Can you help me?','I agree!','Let\'s have a meeting.'],
+  family:['I have a brother.','My mom is a teacher.','I\'m married.','I have two kids.','My family is big!'],
+  health:['I don\'t feel well.','I have a headache.','I need a doctor.','Where\'s the pharmacy?','I have a fever.'],
+  weather:['It\'s so hot today!','It\'s raining!','Beautiful weather!','I need an umbrella.','It\'s freezing!'],
+};
+
+function setTopic(el, topic){
+  curTopic=topic;
+  document.querySelectorAll('.topic-chip').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  setQuickReplies(QUICK_BY_TOPIC[topic]||QUICK_BY_TOPIC.free);
+  // Reset conversation with new context
+  chatHistory=[];
+  document.getElementById('msgs').innerHTML='';
+  startConversation(topic);
+}
+
+function setQuickReplies(arr){
+  var q=document.getElementById('quickR');
+  q.innerHTML=arr.map(function(s){
+    var sf=s.replace(/'/g,"\\'");
+    return '<div class="qr" onclick="document.getElementById(\'msgIn\').value=\''+sf+'\';send()">'+s+'</div>';
+  }).join('');
+}
+
+// ── CHAT ────────────────────────────────────
+function fmtMsg(text){
+  // Format bilingual message
+  var lines=text.split('\n');
+  var html='';
+  lines.forEach(function(line){
+    line=line.trim();
+    if(!line)return;
+    if(line.startsWith('🇪🇸')){
+      html+='<div class="es-line">'+line+'</div>';
+    } else if(line.startsWith('💡')){
+      html+='<div class="word-tip">'+line+'</div>';
+    } else {
+      // Bold asterisks
+      line=line.replace(/\*([^*]+)\*/g,'<strong style="color:#a78bfa;">$1</strong>');
+      html+='<div class="en">'+line+'</div>';
+    }
+  });
+  return html;
+}
+
+function addAlexMsg(text){
+  var c=document.getElementById('msgs');
+  var d=document.createElement('div');d.className='msg';
+  var av=document.createElement('div');av.className='mav';av.textContent='🤖';
+  var b=document.createElement('div');b.className='mbub';b.innerHTML=fmtMsg(text);
+  d.appendChild(av);d.appendChild(b);
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function addUserMsg(text){
+  var c=document.getElementById('msgs');
+  var d=document.createElement('div');d.className='msg u';
+  var av=document.createElement('div');av.className='mav';av.textContent='👤';
+  var b=document.createElement('div');b.className='mbub';b.textContent=text;
+  d.appendChild(av);d.appendChild(b);
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function addTyping(){
+  var c=document.getElementById('msgs');
+  var d=document.createElement('div');d.className='typing-wrap';d.id='typr';
+  var av=document.createElement('div');av.className='mav';av.textContent='🤖';
+  var b=document.createElement('div');b.className='typing-bub';
+  b.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  d.appendChild(av);d.appendChild(b);
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function removeTyping(){var e=document.getElementById('typr');if(e)e.remove();}
+
+function send(){
+  var inp=document.getElementById('msgIn');
+  var text=inp.value.trim();
+  if(!text)return;
+  inp.value='';inp.style.height='28px';
+  hideTranscript();
+  if(isSpeaking&&synth)synth.cancel();
+  addUserMsg(text);
+  chatHistory.push({role:'user',content:text});
+  document.getElementById('sendBtn').disabled=true;
+  setStatus('think');
+  addTyping();
+  var sys=SYSTEM+'\n\nCONTEXTO: '+( TOPIC_CONTEXTS[curTopic]||TOPIC_CONTEXTS.free);
+  var msgs=chatHistory.filter(function(m){return m.role!=='system';});
+  callGroq(msgs,sys)
+    .then(function(r){
+      removeTyping();
+      addAlexMsg(r);
+      chatHistory.push({role:'assistant',content:r});
+      speakText(r);
+      setStatus('idle');
+      document.getElementById('sendBtn').disabled=false;
+    })
+    .catch(function(e){
+      removeTyping();setStatus('idle');
+      addAlexMsg('Oops! Something went wrong 😅\n🇪🇸 ¡Ups! Algo salió mal. Error: '+e.message);
+      document.getElementById('sendBtn').disabled=false;
+    });
+}
+
+function startConversation(topic){
+  var sys=SYSTEM+'\n\nCONTEXTO: '+(TOPIC_CONTEXTS[topic]||TOPIC_CONTEXTS.free);
+  chatHistory.push({role:'system',content:sys});
+  setStatus('think');addTyping();
+  var openers={
+    free:'Start a natural friendly conversation. Greet warmly and ask something simple to get to know them.',
+    greetings:'Start by teaching greetings naturally, like you just met them.',
+    shopping:'Start a shopping conversation, like you\'re both at a store.',
+    restaurant:'Start like you\'re a waiter at a restaurant meeting the customer.',
+    travel:'Start like you\'re at an airport or hotel together.',
+    work:'Start a friendly work conversation, like meeting a new colleague.',
+    family:'Ask them about their family in a friendly natural way.',
+    health:'Start a conversation about health, like asking how they\'re feeling.',
+    weather:'Start by commenting on the weather and make it a natural conversation.',
+  };
+  callGroq([{role:'user',content:openers[topic]||openers.free}],sys)
+    .then(function(r){
+      removeTyping();setStatus('idle');
+      addAlexMsg(r);
+      chatHistory.push({role:'assistant',content:r});
+      speakText(r);
+    })
+    .catch(function(e){removeTyping();setStatus('idle');addAlexMsg('Hey! 👋\n🇪🇸 ¡Hola! Ready to practice English?\n🇪🇸 ¿Listo para practicar inglés?');});
+}
+
+async function callGroq(messages,system){
+  if(!API_KEY)throw new Error('Sin API Key');
+  var ms=[{role:'system',content:system}].concat(messages);
+  var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
+    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:ms,max_tokens:600,temperature:0.9})
+  });
+  if(!res.ok){var e=await res.json().catch(function(){return{};});throw new Error((e.error&&e.error.message)||'HTTP '+res.status);}
+  var d=await res.json();
+  return d.choices[0].message.content;
+}
+
+// ── UI HELPERS ───────────────────────────────
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function autoResize(el){el.style.height='28px';el.style.height=Math.min(el.scrollHeight,80)+'px';}
+
+// ── INIT ─────────────────────────────────────
+function iniciar(){
+  var v=document.getElementById('keyIn').value.trim();
+  if(!v){alert('Pega tu API Key de Groq primero.');return;}
+  API_KEY=v;
+  try{localStorage.setItem('alex_key',v);}catch(e){}
+  document.getElementById('setup').style.display='none';
+  setQuickReplies(QUICK_BY_TOPIC.free);
+  startConversation('free');
+}
+
+// Fix mobile keyboard resize
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',function(){
+    document.body.style.height=window.visualViewport.height+'px';
+  });
+}
+
+(function(){
+  var k='';try{k=localStorage.getItem('alex_key')||'';}catch(e){}
+  if(k){
+    API_KEY=k;
+    document.getElementById('setup').style.display='none';
+    setQuickReplies(QUICK_BY_TOPIC.free);
+    startConversation('free');
+  }
+})();
+</script>
+</body>
+</html>
