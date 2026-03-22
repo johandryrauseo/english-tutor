@@ -6,12 +6,12 @@
 <title>Habla con Alex</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f0;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:fixed;width:100%;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f0;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:fixed;width:100%;top:0;left:0;}
 
 /* SETUP */
 .setup{position:fixed;inset:0;background:#0a0a14;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;gap:14px;z-index:99;overflow-y:auto;}
-.sav{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:4px;}
-.setup h1{font-size:1.3rem;color:#fff;text-align:center;}
+.sav{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:36px;}
+.setup h1{font-size:1.25rem;color:#fff;text-align:center;}
 .setup p{font-size:.82rem;color:#9999bb;text-align:center;line-height:1.65;max-width:340px;}
 .scard{background:#111122;border:1px solid #1e1e3a;border-radius:14px;padding:18px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:11px;}
 .scard label{font-size:.79rem;color:#ccccee;font-weight:600;}
@@ -19,18 +19,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f
 .key-in{background:#0a0a14;border:2px solid #6c63ff;border-radius:10px;padding:11px 13px;color:#e8e8f0;font-size:.87rem;outline:none;font-family:inherit;width:100%;}
 .key-in:focus{border-color:#a855f7;}
 .btn-start{background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:11px;padding:13px;color:#fff;font-size:.95rem;cursor:pointer;font-weight:700;width:100%;}
-.btn-start:active{opacity:.85;}
 .priv{font-size:.68rem;color:#444466;text-align:center;}
 
 /* HEADER */
 .top{background:#111122;border-bottom:1px solid #1e1e3a;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.alex-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;position:relative;}
-.alex-av::after{content:'';position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:#4ade80;border-radius:50%;border:2px solid #111122;}
-.alex-av.spk::after{background:#a855f7;animation:ap .6s infinite;}
-.alex-av.lst::after{background:#ef4444;animation:ap .5s infinite;}
+.aav{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;position:relative;}
+.aav::after{content:'';position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:#4ade80;border-radius:50%;border:2px solid #111122;}
+.aav.spk::after{background:#a855f7;animation:ap .6s infinite;}
 @keyframes ap{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
 .ti h2{font-size:.9rem;color:#fff;}.ti p{font-size:.67rem;color:#8888aa;}
-.tr{margin-left:auto;display:flex;align-items:center;gap:9px;}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px;}
 .vwrap{display:flex;align-items:center;gap:4px;font-size:.67rem;color:#7777aa;}
 .sw{position:relative;width:30px;height:16px;cursor:pointer;}
 .sw input{opacity:0;width:0;height:0;position:absolute;}
@@ -40,15 +38,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f
 .sw input:checked~.sw-th{left:16px;}
 .spill{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:20px;padding:3px 9px;font-size:.64rem;color:#7777aa;display:flex;align-items:center;gap:4px;}
 .sdot{width:5px;height:5px;border-radius:50%;background:#4ade80;}
-.sdot.r{background:#ef4444;animation:bl .8s infinite;}.sdot.s{background:#a855f7;animation:bl .7s infinite;}
+.sdot.s{background:#a855f7;animation:bl .7s infinite;}
 @keyframes bl{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-/* TOPICS BAR */
+/* TOPICS */
 .tbar{background:#111122;border-bottom:1px solid #1e1e3a;padding:6px 12px;flex-shrink:0;}
-.tbar p{font-size:.67rem;color:#7777aa;margin-bottom:5px;}
+.tbar-lbl{font-size:.67rem;color:#7777aa;margin-bottom:5px;}
 .tlist{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .tlist::-webkit-scrollbar{display:none;}
-.tchip{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:18px;padding:5px 12px;font-size:.71rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.tchip{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:18px;padding:5px 12px;font-size:.71rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;user-select:none;}
 .tchip.active{background:#252548;border-color:#6c63ff;color:#a78bfa;}
 
 /* MESSAGES */
@@ -71,24 +69,61 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f
 .typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
 @keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-7px);}}
 
-/* INPUT */
+/* BOTTOM */
 .bottom{background:#111122;border-top:1px solid #1e1e3a;padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
-.tscript{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:8px;padding:5px 11px;font-size:.73rem;color:#8888aa;font-style:italic;margin-bottom:6px;display:none;}
-.tscript.show{display:block;}
-.qr{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:4px 0 4px;margin-bottom:5px;}
+.status-bar{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:8px;padding:5px 11px;font-size:.73rem;color:#8888aa;font-style:italic;margin-bottom:6px;min-height:28px;display:flex;align-items:center;gap:6px;}
+.status-bar .dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;}
+.status-bar .dot.rec{background:#ef4444;animation:pulse .6s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.4);}}
+.qr{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;margin-bottom:6px;}
 .qr::-webkit-scrollbar{display:none;}
 .qrbt{background:#1a1a2e;border:1px solid #1e1e3a;border-radius:15px;padding:5px 11px;font-size:.7rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.qrbt:active{border-color:#6c63ff;color:#a78bfa;}
+.qrbt:active{border-color:#6c63ff;}
 .inrow{display:flex;gap:7px;align-items:flex-end;}
-.micbig{width:46px;height:46px;border-radius:50%;border:2px solid #2a2a4a;cursor:pointer;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
-.micbig.on{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:#ef4444;animation:mp 1s infinite;}
-@keyframes mp{0%,100%{box-shadow:0 0 0 0 #ef444444;}50%{box-shadow:0 0 0 8px #ef444400;}}
+
+/* PUSH-TO-TALK MIC */
+.mic-ptt{
+  width:52px;height:52px;border-radius:50%;
+  border:2px solid #3a3a5a;
+  background:#1a1a2e;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+  transition:all .15s;
+}
+.mic-ptt.recording{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  border-color:#ef4444;
+  transform:scale(1.1);
+  box-shadow:0 0 0 8px #ef444422;
+}
+.mic-hint{font-size:.6rem;color:#555577;text-align:center;margin-top:3px;}
+
 .taw{flex:1;background:#1a1a2e;border:1px solid #1e1e3a;border-radius:13px;padding:7px 11px;display:flex;align-items:center;gap:7px;}
 .taw:focus-within{border-color:#6c63ff44;}
 textarea.msgin{flex:1;background:none;border:none;outline:none;color:#e8e8f0;font-size:.83rem;font-family:inherit;resize:none;height:26px;max-height:76px;line-height:1.4;}
 textarea.msgin::placeholder{color:#444466;}
 .sendbtn{width:32px;height:32px;background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:50%;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sendbtn:disabled{opacity:.3;}
+
+/* DICTIONARY */
+.dict-panel{display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden;}
+.dict-top{padding:9px 12px;background:#111122;border-bottom:1px solid #1e1e3a;display:flex;gap:8px;align-items:center;}
+.dict-in-wrap{position:relative;flex:1;}
+.dict-in{width:100%;background:#1a1a2e;border:2px solid #6c63ff;border-radius:11px;padding:9px 38px 9px 13px;color:#e8e8f0;font-size:.83rem;outline:none;font-family:inherit;}
+.dict-in:focus{border-color:#a855f7;}
+.dict-ico{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;}
+.dict-back{background:#1e1e38;border:1px solid #2a2a4a;border-radius:9px;padding:7px 12px;color:#9999cc;cursor:pointer;font-size:.74rem;white-space:nowrap;flex-shrink:0;}
+.dict-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.dict-result{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:14px;display:none;}
+.dict-empty{text-align:center;padding:20px;color:#7777aa;font-size:.78rem;line-height:1.8;}
+.dhist-wrap{display:none;}
+.dhist-lbl{font-size:.69rem;color:#7777aa;margin-bottom:6px;}
+.dhist-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.dchip{background:#1e1e38;border:1px solid #2a2a4a;border-radius:13px;padding:4px 11px;font-size:.71rem;color:#9999cc;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -97,15 +132,10 @@ textarea.msgin::placeholder{color:#444466;}
 <div class="setup" id="setup">
   <div class="sav">🤖</div>
   <h1>Hola, soy Alex 👋</h1>
-  <p>Tu amigo bilingüe. Te hablo en inglés <strong>y</strong> español para que vayas aprendiendo poco a poco, como hablar con una persona real.</p>
+  <p>Tu amigo bilingüe. Te hablo en inglés <strong>y</strong> español para que aprendas poco a poco, como hablar con una persona real.</p>
   <div class="scard">
     <label>🔑 API Key de Groq (gratis, sin tarjeta)</label>
-    <div class="steps">
-      1. Ve a <strong>console.groq.com</strong><br>
-      2. Crea una cuenta gratuita<br>
-      3. API Keys → Create API Key<br>
-      4. Copia y pega aquí 👇
-    </div>
+    <div class="steps">1. Ve a <strong>console.groq.com</strong><br>2. Crea cuenta gratuita<br>3. API Keys → Create API Key<br>4. Pega aquí 👇</div>
     <input class="key-in" id="keyIn" type="text" placeholder="gsk_..." autocomplete="off" autocorrect="off" spellcheck="false"/>
     <div id="kerr" style="font-size:.74rem;color:#f87171;display:none;text-align:center;"></div>
     <button class="btn-start" onclick="iniciar()">¡Empezar a hablar! 🚀</button>
@@ -113,9 +143,9 @@ textarea.msgin::placeholder{color:#444466;}
   <p class="priv">🔒 Tu key se guarda solo en este navegador</p>
 </div>
 
-<!-- MAIN -->
+<!-- HEADER -->
 <div class="top">
-  <div class="alex-av" id="aav">🤖</div>
+  <div class="aav" id="aav">🤖</div>
   <div class="ti"><h2>Alex</h2><p id="topSt">Tu amigo bilingüe · En línea</p></div>
   <div class="tr">
     <div class="vwrap">
@@ -126,9 +156,10 @@ textarea.msgin::placeholder{color:#444466;}
   </div>
 </div>
 
+<!-- TOPICS BAR -->
 <div class="tbar">
-  <p>¿De qué quieres hablar?</p>
-  <div class="tlist" id="tlist">
+  <div class="tbar-lbl">¿De qué quieres hablar?</div>
+  <div class="tlist">
     <div class="tchip active" onclick="setTopic(this,'free')">💬 Libre</div>
     <div class="tchip" onclick="setTopic(this,'greetings')">👋 Saludos</div>
     <div class="tchip" onclick="setTopic(this,'shopping')">🛒 Compras</div>
@@ -142,55 +173,74 @@ textarea.msgin::placeholder{color:#444466;}
   </div>
 </div>
 
-<!-- DICTIONARY PANEL -->
-<div id="dictPanel" style="display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
-  <div style="padding:9px 12px;background:#111122;border-bottom:1px solid #1e1e3a;display:flex;gap:8px;align-items:center;">
-    <div style="position:relative;flex:1;">
-      <input id="dsIn" type="text" placeholder="Busca: casa, dog, happy, gracias..."
-        style="width:100%;background:#1a1a2e;border:2px solid #6c63ff;border-radius:11px;padding:9px 38px 9px 13px;color:#e8e8f0;font-size:.83rem;outline:none;font-family:inherit;"
-        oninput="dsearch(this.value)" onkeydown="if(event.key==='Enter')dsearch(this.value)" autocorrect="off" spellcheck="false"/>
-      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
-    </div>
-    <button onclick="closeDict()" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:9px;padding:7px 12px;color:#9999cc;cursor:pointer;font-size:.74rem;white-space:nowrap;flex-shrink:0;">← Volver</button>
+<!-- CHAT -->
+<div class="msgs" id="msgs"></div>
+
+<!-- BOTTOM INPUT -->
+<div class="bottom" id="mainBottom">
+  <div class="status-bar" id="statusBar">
+    <div class="dot" id="recDot"></div>
+    <span id="statusTxt">Mantén 🎤 para hablar · Suelta para enviar</span>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;">
-    <div id="dRes" style="display:none;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:14px;"></div>
-    <div id="dHist" style="display:none;">
-      <div style="font-size:.69rem;color:#7777aa;margin-bottom:6px;">🕐 Recientes:</div>
-      <div id="dChips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <div class="qr" id="qr"></div>
+  <div class="inrow">
+    <!-- PUSH TO TALK -->
+    <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+      <button class="mic-ptt" id="micBtn"
+        onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()"
+        ontouchstart="startPTT(event)" ontouchend="stopPTT(event)" ontouchcancel="stopPTT(event)">
+        🎤
+      </button>
+      <div class="mic-hint">mantén</div>
     </div>
-    <div style="text-align:center;padding:16px 0;color:#7777aa;font-size:.75rem;line-height:1.8;">
-      Busca en <strong style="color:#a78bfa;">inglés</strong> o <strong style="color:#a78bfa;">español</strong><br>
-      <span style="font-size:.68rem;color:#555577;">Ej: hello · casa · happy · trabajo · beautiful · gato</span>
+    <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+      <div class="taw">
+        <textarea class="msgin" id="msgIn" placeholder="O escribe aquí..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendText();}"
+          oninput="autoResize(this)"></textarea>
+        <button class="sendbtn" id="sbtn" onclick="sendText()">➤</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="msgs" id="msgs"></div>
-
-<div class="bottom" id="mainBottom">
-  <div class="tscript" id="tscript"></div>
-  <div class="qr" id="qr"></div>
-  <div class="inrow">
-    <button class="micbig" id="micBtn" onclick="toggleMic()">🎤</button>
-    <div class="taw">
-      <textarea class="msgin" id="msgIn" placeholder="Escribe en inglés, español o mezcla los dos..." rows="1" onkeydown="onKey(event)" oninput="resize(this)"></textarea>
-      <button class="sendbtn" id="sbtn" onclick="send()">➤</button>
+<!-- DICTIONARY PANEL -->
+<div class="dict-panel" id="dictPanel">
+  <div class="dict-top">
+    <div class="dict-in-wrap">
+      <input class="dict-in" id="dsIn" type="text"
+        placeholder="Busca: casa · dog · happy · gracias..."
+        oninput="dsearch(this.value)"
+        onkeydown="if(event.key==='Enter')dsearch(this.value)"
+        autocorrect="off" spellcheck="false"/>
+      <span class="dict-ico">🔍</span>
+    </div>
+    <button class="dict-back" onclick="closeDict()">← Volver</button>
+  </div>
+  <div class="dict-body">
+    <div class="dict-result" id="dRes"></div>
+    <div class="dhist-wrap" id="dHist">
+      <div class="dhist-lbl">🕐 Recientes:</div>
+      <div class="dhist-chips" id="dChips"></div>
+    </div>
+    <div class="dict-empty">
+      Busca en <strong style="color:#a78bfa;">inglés</strong> o <strong style="color:#a78bfa;">español</strong><br>
+      <span style="font-size:.68rem;color:#555577;">hello · casa · happy · trabajo · beautiful · gato</span>
     </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════
+// ══════════════════════════════════════
 // ESTADO
-// ══════════════════════════════
+// ══════════════════════════════════════
 var KEY='', topic='free', hist=[];
-var listening=false, speaking=false, rec=null, finalTxt='';
+var speaking=false;
 var synth=window.speechSynthesis||null, voice=null;
 
-// ══════════════════════════════
-// VOCES
-// ══════════════════════════════
+// ══════════════════════════════════════
+// VOCES TTS
+// ══════════════════════════════════════
 function loadVoices(){
   if(!synth)return;
   var vs=synth.getVoices();
@@ -204,122 +254,111 @@ function speakText(text){
   if(!document.getElementById('ttsOn').checked||!synth)return;
   var lines=text.split('\n');
   var en=lines.filter(function(l){return l.trim()&&!l.trim().startsWith('🇪🇸')&&!l.trim().startsWith('💡');});
-  var clean=en.join(' ').replace(/\([^)]{0,120}\)/g,'').replace(/\*([^*]+)\*/g,'$1').replace(/<[^>]+>/g,'').replace(/[^\w\s\',.!?-]/g,'').replace(/\s+/g,' ').trim();
+  var clean=en.join(' ')
+    .replace(/\([^)]{0,120}\)/g,'')
+    .replace(/\*([^*]+)\*/g,'$1')
+    .replace(/<[^>]+>/g,'')
+    .replace(/[^\w\s',.!?-]/g,'')
+    .replace(/\s+/g,' ').trim();
   if(!clean)return;
   synth.cancel();
-  var u=new SpeechSynthesisUtterance(clean);u.lang='en-US';u.rate=0.84;u.pitch=1.05;if(voice)u.voice=voice;
-  u.onstart=function(){speaking=true;setSt('s');document.getElementById('aav').classList.add('spk');};
-  u.onend=u.onerror=function(){speaking=false;setSt('');document.getElementById('aav').classList.remove('spk');};
+  var u=new SpeechSynthesisUtterance(clean);
+  u.lang='en-US';u.rate=0.84;u.pitch=1.05;if(voice)u.voice=voice;
+  u.onstart=function(){speaking=true;setStat('s');document.getElementById('aav').classList.add('spk');};
+  u.onend=u.onerror=function(){speaking=false;setStat('');document.getElementById('aav').classList.remove('spk');};
   synth.speak(u);
 }
-function speakW(w){if(!synth)return;synth.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=0.78;if(voice)u.voice=voice;synth.speak(u);}
+function speakW(w){
+  if(!synth)return;synth.cancel();
+  var u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=0.78;if(voice)u.voice=voice;
+  synth.speak(u);
+}
 
-// ══════════════════════════════
-// MICRÓFONO — acumula manualmente, envía solo al tocar ⏹️
-// ══════════════════════════════
+// ══════════════════════════════════════
+// PUSH-TO-TALK MICRÓFONO
+// — graba solo mientras se mantiene presionado
+// — usa MediaRecorder + Web Speech API fallback
+// ══════════════════════════════════════
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var accumulated='';   // texto acumulado entre reinicios
-var wantStop=false;   // el usuario tocó ⏹️
+var pttActive=false, pttRec=null;
 
-function toggleMic(){
-  if(!SR){alert('Usa Google Chrome para hablar por voz.');return;}
-  if(listening){
-    // Usuario toca ⏹️ — parar y enviar
-    wantStop=true;
-    rec.stop();
+function startPTT(e){
+  if(e)e.preventDefault();
+  if(pttActive)return;
+  if(speaking&&synth)synth.cancel();
+  if(!SR){
+    setStatus('⚠️ Tu navegador no soporta voz. Usa Google Chrome.','');
     return;
   }
-  if(speaking&&synth)synth.cancel();
-  accumulated='';
-  wantStop=false;
-  startRec();
-}
+  pttActive=true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micBtn').textContent='🔴';
+  document.getElementById('recDot').classList.add('rec');
+  setStatus('🔴 Grabando... suelta para enviar','rec');
 
-function startRec(){
-  rec=new SR();
-  rec.lang='en-US';
-  rec.continuous=false;    // más estable en móvil
-  rec.interimResults=true;
+  pttRec=new SR();
+  pttRec.lang='en-US';
+  pttRec.continuous=false;
+  pttRec.interimResults=false; // solo resultados finales, sin intermedios
+  pttRec.maxAlternatives=1;
 
-  rec.onstart=function(){
-    listening=true;
-    document.getElementById('micBtn').classList.add('on');
-    document.getElementById('micBtn').textContent='⏹️';
-    document.getElementById('aav').classList.add('lst');
-    setSt('r');
-    showTs('🎤 Habla... toca ⏹️ cuando termines');
+  pttRec.onresult=function(e){
+    // Un solo resultado final limpio
+    if(e.results.length>0&&e.results[0].isFinal){
+      document.getElementById('msgIn').value=e.results[0][0].transcript;
+    }
+  };
+  pttRec.onerror=function(e){
+    if(e.error==='aborted'||e.error==='no-speech')return;
+    setStatus('⚠️ Error de micrófono: '+e.error,'');
+  };
+  pttRec.onend=function(){
+    // no hacer nada aquí — stopPTT se encarga de enviar
   };
 
-  rec.onresult=function(e){
-    var final='', interim='';
-    for(var i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
-      else interim+=e.results[i][0].transcript;
-    }
-    // Mostrar: lo acumulado anterior + este resultado
-    var preview=(accumulated+' '+final+interim).trim();
-    showTs('🎤 '+preview);
-    document.getElementById('msgIn').value=preview;
-  };
-
-  rec.onerror=function(e){
-    if(e.error==='no-speech'){
-      // Pausa silenciosa — si el usuario no tocó ⏹️, reiniciar
-      listening=false;
-      if(!wantStop) restartRec();
-      return;
-    }
-    if(e.error==='aborted') return; // parada manual, ignorar
-    listening=false;
-    document.getElementById('micBtn').classList.remove('on');
+  try{pttRec.start();}
+  catch(err){
+    pttActive=false;
+    document.getElementById('micBtn').classList.remove('recording');
     document.getElementById('micBtn').textContent='🎤';
-    document.getElementById('aav').classList.remove('lst');
-    setSt('');
-    showTs(e.error==='not-allowed'?'⚠️ Permiso denegado. Permite el micrófono en Chrome.':'Error: '+e.error);
-    setTimeout(hideTs,3000);
-  };
-
-  rec.onend=function(){
-    listening=false;
-    if(wantStop){
-      // Usuario tocó ⏹️ — enviar lo acumulado
-      document.getElementById('micBtn').classList.remove('on');
-      document.getElementById('micBtn').textContent='🎤';
-      document.getElementById('aav').classList.remove('lst');
-      setSt('');
-      hideTs();
-      var t=(document.getElementById('msgIn').value||'').trim();
-      if(t) send();
-    } else {
-      // Fin natural (pausa) — acumular y reiniciar
-      var cur=(document.getElementById('msgIn').value||'').trim();
-      if(cur) accumulated=cur;
-      restartRec();
-    }
-  };
-
-  try{ rec.start(); }catch(e){ showTs('Error al iniciar micrófono: '+e.message); }
+    setStatus('⚠️ No se pudo iniciar el micrófono','');
+  }
 }
 
-function restartRec(){
-  // Pequeña pausa antes de reiniciar para que Chrome se estabilice
+function stopPTT(e){
+  if(e)e.preventDefault();
+  if(!pttActive)return;
+  pttActive=false;
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('micBtn').textContent='🎤';
+  document.getElementById('recDot').classList.remove('rec');
+
+  // Detener reconocimiento
+  if(pttRec){
+    try{pttRec.stop();}catch(err){}
+    pttRec=null;
+  }
+
+  // Esperar un instante para que onresult tenga tiempo de escribir el texto
   setTimeout(function(){
-    if(!wantStop) startRec();
-  }, 150);
+    setStatus('Mantén 🎤 para hablar · Suelta para enviar','');
+    var t=document.getElementById('msgIn').value.trim();
+    if(t) sendText();
+  }, 300);
 }
 
-function showTs(t){var el=document.getElementById('tscript');el.textContent=t;el.classList.add('show');}
-function hideTs(){document.getElementById('tscript').classList.remove('show');}
-
-function setSt(m){
-  var d=document.getElementById('sdot');d.className='sdot'+(m==='r'?' r':m==='s'?' s':'');
-  document.getElementById('stxt').textContent=m==='r'?'Escuchando...':m==='s'?'Hablando...':'Listo';
-  document.getElementById('topSt').textContent=m==='r'?'Escuchando...':m==='s'?'Alex está hablando...':'Tu amigo bilingüe · En línea';
+function setStatus(txt, mode){
+  document.getElementById('statusTxt').textContent=txt;
+  var dot=document.getElementById('sdot');
+  document.getElementById('stxt').textContent=mode==='s'?'Hablando...':mode==='rec'?'Grabando...':'Listo';
+  dot.className='sdot'+(mode==='s'?' s':'');
+  document.getElementById('topSt').textContent=mode==='s'?'Alex está hablando...':mode==='rec'?'Escuchando...':'Tu amigo bilingüe · En línea';
 }
+function setStat(m){setStatus(m==='s'?'🔊 Alex hablando...':'Mantén 🎤 para hablar · Suelta para enviar',m);}
 
-// ══════════════════════════════
+// ══════════════════════════════════════
 // TEMAS
-// ══════════════════════════════
+// ══════════════════════════════════════
 var CONTEXTS={
   free:'Conversación libre y natural.',
   greetings:'El estudiante quiere practicar saludos y presentaciones.',
@@ -345,24 +384,24 @@ var QR={
 
 var SYS=`Eres Alex, un amigo bilingüe (inglés-español) que ayuda a alguien a aprender inglés de forma natural y divertida.
 
-PERSONALIDAD: Eres amigable, divertido y relajado — como un amigo real, no un maestro formal. Usas expresiones naturales y coloquiales.
+PERSONALIDAD: Amigable, divertido y relajado — como un amigo real, no un maestro formal.
 
-FORMATO OBLIGATORIO — cada cosa que dices va en dos partes:
-Línea 1: La frase en inglés, natural y conversacional
-Línea 2 (🇪🇸): La misma idea en español
+FORMATO OBLIGATORIO en cada respuesta:
+Línea 1: La frase en inglés
+Línea 2 (🇪🇸): La traducción al español
 
 Ejemplo:
 "Hey! How's it going? 😊
 🇪🇸 ¡Oye! ¿Cómo te va?"
 
 REGLAS:
-1. SIEMPRE incluye la traducción al español en la línea 🇪🇸
-2. Resalta palabras clave con *asteriscos*: "*Hello*"
-3. Para palabras nuevas difíciles agrega: 💡 *palabra* = significado en español
-4. Si el estudiante escribe en español, muéstrale cómo decirlo en inglés primero
-5. Corrige errores de forma natural y amigable con explicación en español
-6. Respuestas cortas (3-5 líneas). Siempre termina con una pregunta
-7. Varía tu energía: "That's awesome!", "Oh nice!", "Really?", "No way!" para sonar real
+1. SIEMPRE incluye la línea 🇪🇸 con la traducción
+2. Resalta palabras clave con *asteriscos*
+3. Para palabras difíciles agrega: 💡 *palabra* = significado
+4. Si el estudiante escribe en español, muéstrale el inglés primero
+5. Corrige errores amablemente con explicación en español
+6. Respuestas cortas (3-5 líneas). Termina siempre con una pregunta
+7. Varía expresiones: "That's awesome!", "Oh nice!", "Really?", "No way!"
 8. NUNCA respondas solo en inglés sin la traducción 🇪🇸
 
 CONTEXTO: `;
@@ -378,20 +417,23 @@ function setTopic(el,t){
 }
 
 function setQR(arr){
-  document.getElementById('qr').innerHTML=arr.map(function(s){var sf=s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");return '<div class="qrbt" onclick="document.getElementById(\'msgIn\').value=\''+sf+'\';send()">'+s+'</div>';}).join('');
+  document.getElementById('qr').innerHTML=arr.map(function(s){
+    var sf=s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<div class="qrbt" onclick="document.getElementById(\'msgIn\').value=\''+sf+'\';sendText()">'+s+'</div>';
+  }).join('');
 }
 
-// ══════════════════════════════
+// ══════════════════════════════════════
 // CONVERSACIÓN
-// ══════════════════════════════
+// ══════════════════════════════════════
 function fmtMsg(text){
   var lines=text.split('\n'),html='';
   lines.forEach(function(line){
     line=line.trim();if(!line)return;
     line=line.replace(/\*([^*]+)\*/g,'<span class="hi">$1</span>');
-    if(line.startsWith('🇪🇸')){html+='<div class="es-line">'+line+'</div>';}
-    else if(line.startsWith('💡')){html+='<div class="wtip">'+line+'</div>';}
-    else{html+='<div class="en-line">'+line+'</div>';}
+    if(line.startsWith('🇪🇸'))html+='<div class="es-line">'+line+'</div>';
+    else if(line.startsWith('💡'))html+='<div class="wtip">'+line+'</div>';
+    else html+='<div class="en-line">'+line+'</div>';
   });
   return html;
 }
@@ -420,51 +462,187 @@ function addTyping(){
 }
 function removeTyping(){var e=document.getElementById('typr');if(e)e.remove();}
 
-function send(){
-  var inp=document.getElementById('msgIn');var t=inp.value.trim();if(!t)return;
-  inp.value='';inp.style.height='26px';hideTs();
+function sendText(){
+  var inp=document.getElementById('msgIn');
+  var t=inp.value.trim();if(!t)return;
+  inp.value='';inp.style.height='26px';
   if(speaking&&synth)synth.cancel();
   addUser(t);hist.push({role:'user',content:t});
-  document.getElementById('sbtn').disabled=true;addTyping();setSt('s');
+  document.getElementById('sbtn').disabled=true;
+  addTyping();
   var sys=SYS+(CONTEXTS[topic]||CONTEXTS.free);
   var ms=hist.filter(function(m){return m.role!=='system';});
   callGroq(ms,sys)
-    .then(function(r){removeTyping();addAlex(r);hist.push({role:'assistant',content:r});speakText(r);document.getElementById('sbtn').disabled=false;setSt('');})
-    .catch(function(e){removeTyping();addAlex('Oops! 😅\n🇪🇸 Hubo un error: '+e.message+'. Verifica tu API Key.');document.getElementById('sbtn').disabled=false;setSt('');});
+    .then(function(r){
+      removeTyping();addAlex(r);
+      hist.push({role:'assistant',content:r});
+      speakText(r);
+      document.getElementById('sbtn').disabled=false;
+    })
+    .catch(function(e){
+      removeTyping();
+      addAlex('Oops! 😅\n🇪🇸 Error al conectar: '+e.message);
+      document.getElementById('sbtn').disabled=false;
+    });
 }
 
 function startConv(t){
   var sys=SYS+(CONTEXTS[t]||CONTEXTS.free);
   hist=[{role:'system',content:sys}];
-  addTyping();setSt('s');
-  var openers={free:'Start a natural friendly conversation. Greet warmly and ask something simple.',greetings:'Start teaching greetings naturally, like you just met them.',shopping:'Start a shopping roleplay, you\'re both at a store.',restaurant:'Start as a friendly waiter at a restaurant.',travel:'Start at an airport or hotel together.',work:'Start a friendly work chat, meeting a new colleague.',family:'Ask about their family in a friendly natural way.',health:'Start a health conversation, ask how they\'re feeling.',weather:'Comment on the weather and make it a fun conversation.'};
+  addTyping();
+  var openers={
+    free:'Start a natural friendly conversation. Greet warmly and ask something simple.',
+    greetings:'Start teaching greetings naturally, like you just met them.',
+    shopping:'Start a shopping roleplay, you\'re both at a store.',
+    restaurant:'Start as a friendly waiter at a restaurant.',
+    travel:'Start at an airport or hotel together.',
+    work:'Start a friendly work chat, meeting a new colleague.',
+    family:'Ask about their family in a friendly natural way.',
+    health:'Start a health conversation, ask how they\'re feeling.',
+    weather:'Comment on the weather and make it a fun conversation.'
+  };
   callGroq([{role:'user',content:openers[t]||openers.free}],sys)
-    .then(function(r){removeTyping();addAlex(r);hist.push({role:'assistant',content:r});speakText(r);setSt('');})
-    .catch(function(e){removeTyping();addAlex('Hey! 👋\n🇪🇸 ¡Hola! Error al conectar: '+e.message+'. Verifica tu API Key de Groq.');setSt('');});
+    .then(function(r){removeTyping();addAlex(r);hist.push({role:'assistant',content:r});speakText(r);})
+    .catch(function(e){removeTyping();addAlex('Hey! 👋\n🇪🇸 ¡Hola! Error: '+e.message+'. Verifica tu API Key.');});
 }
 
 async function callGroq(messages,system){
-  if(!KEY)throw new Error('Sin API Key');
+  if(!KEY)throw new Error('Sin API Key. Recarga la página.');
   var ms=[{role:'system',content:system}].concat(messages);
   var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+KEY},
     body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:ms,max_tokens:600,temperature:0.9})
   });
-  if(!res.ok){var e=await res.json().catch(function(){return{};});throw new Error((e.error&&e.error.message)||'HTTP '+res.status);}
+  if(!res.ok){
+    var e=await res.json().catch(function(){return{};});
+    throw new Error((e.error&&e.error.message)||'HTTP '+res.status);
+  }
   var d=await res.json();
   return d.choices[0].message.content;
 }
 
-// ══════════════════════════════
-// UI HELPERS
-// ══════════════════════════════
-function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function resize(el){el.style.height='26px';el.style.height=Math.min(el.scrollHeight,76)+'px';}
+// ══════════════════════════════════════
+// DICCIONARIO
+// ══════════════════════════════════════
+var DICT=[
+  {en:'hello',es:'hola',ph:'/həˈloʊ/',cat:'Saludos',ex:'"<b>Hello</b>! My name is Ana. (¡<b>Hola</b>! Me llamo Ana.)"'},
+  {en:'goodbye',es:'adiós',ph:'/ɡʊdˈbaɪ/',cat:'Saludos',ex:'"<b>Goodbye</b>! See you tomorrow. (¡<b>Adiós</b>! Hasta mañana.)"'},
+  {en:'good morning',es:'buenos días',ph:'/ɡʊd ˈmɔːrnɪŋ/',cat:'Saludos',ex:'"<b>Good morning</b>! How are you? (¡<b>Buenos días</b>! ¿Cómo estás?)"'},
+  {en:'good afternoon',es:'buenas tardes',ph:'/ɡʊd ˌæftərˈnuːn/',cat:'Saludos',ex:'"<b>Good afternoon</b>! Welcome. (¡<b>Buenas tardes</b>! Bienvenido.)"'},
+  {en:'good night',es:'buenas noches',ph:'/ɡʊd naɪt/',cat:'Saludos',ex:'"<b>Good night</b>! See you tomorrow. (¡<b>Buenas noches</b>! Hasta mañana.)"'},
+  {en:'please',es:'por favor',ph:'/pliːz/',cat:'Cortesía',ex:'"Water, <b>please</b>. (Agua, <b>por favor</b>.)"'},
+  {en:'thank you',es:'gracias',ph:'/θæŋk juː/',cat:'Cortesía',ex:'"<b>Thank you</b> very much! (¡Muchas <b>gracias</b>!)"'},
+  {en:'sorry',es:'lo siento',ph:'/ˈsɒri/',cat:'Cortesía',ex:'"<b>Sorry</b>, I don\'t understand. (<b>Lo siento</b>, no entiendo.)"'},
+  {en:'excuse me',es:'disculpe',ph:'/ɪkˈskjuːz miː/',cat:'Cortesía',ex:'"<b>Excuse me</b>, where is the bathroom? (<b>Disculpe</b>, ¿dónde está el baño?)"'},
+  {en:'yes',es:'sí',ph:'/jɛs/',cat:'Básico',ex:'"<b>Yes</b>, I understand. (<b>Sí</b>, entiendo.)"'},
+  {en:'no',es:'no',ph:'/noʊ/',cat:'Básico',ex:'"<b>No</b>, thank you. (<b>No</b>, gracias.)"'},
+  {en:'help',es:'ayuda',ph:'/hɛlp/',cat:'Básico',ex:'"I need <b>help</b>! (¡Necesito <b>ayuda</b>!)"'},
+  {en:'water',es:'agua',ph:'/ˈwɔːtər/',cat:'Comida',ex:'"Can I have some <b>water</b>? (¿Me da <b>agua</b>?)"'},
+  {en:'food',es:'comida',ph:'/fuːd/',cat:'Comida',ex:'"The <b>food</b> is delicious! (¡La <b>comida</b> está deliciosa!)"'},
+  {en:'coffee',es:'café',ph:'/ˈkɒfi/',cat:'Comida',ex:'"I would like a <b>coffee</b>. (Quisiera un <b>café</b>.)"'},
+  {en:'house',es:'casa',ph:'/haʊs/',cat:'Hogar',ex:'"I live in a big <b>house</b>. (Vivo en una <b>casa</b> grande.)"'},
+  {en:'dog',es:'perro',ph:'/dɒɡ/',cat:'Animales',ex:'"My <b>dog</b> is friendly. (Mi <b>perro</b> es amigable.)"'},
+  {en:'cat',es:'gato',ph:'/kæt/',cat:'Animales',ex:'"The <b>cat</b> is sleeping. (El <b>gato</b> está durmiendo.)"'},
+  {en:'happy',es:'feliz',ph:'/ˈhæpi/',cat:'Emociones',ex:'"I am very <b>happy</b>! (¡Estoy muy <b>feliz</b>!)"'},
+  {en:'sad',es:'triste',ph:'/sæd/',cat:'Emociones',ex:'"Why are you <b>sad</b>? (¿Por qué estás <b>triste</b>?)"'},
+  {en:'love',es:'amor / amar',ph:'/lʌv/',cat:'Emociones',ex:'"I <b>love</b> this song. (Me <b>encanta</b> esta canción.)"'},
+  {en:'big',es:'grande',ph:'/bɪɡ/',cat:'Adjetivos',ex:'"This is a <b>big</b> city. (Esta es una ciudad <b>grande</b>.)"'},
+  {en:'small',es:'pequeño',ph:'/smɔːl/',cat:'Adjetivos',ex:'"I have a <b>small</b> dog. (Tengo un perro <b>pequeño</b>.)"'},
+  {en:'good',es:'bueno',ph:'/ɡʊd/',cat:'Adjetivos',ex:'"This is very <b>good</b>! (¡Esto está muy <b>bueno</b>!)"'},
+  {en:'bad',es:'malo',ph:'/bæd/',cat:'Adjetivos',ex:'"This is <b>bad</b>. (Esto es <b>malo</b>.)"'},
+  {en:'beautiful',es:'hermoso',ph:'/ˈbjuːtɪfəl/',cat:'Adjetivos',ex:'"The sunset is <b>beautiful</b>. (El atardecer es <b>hermoso</b>.)"'},
+  {en:'work',es:'trabajo',ph:'/wɜːrk/',cat:'Trabajo',ex:'"I <b>work</b> every day. (<b>Trabajo</b> todos los días.)"'},
+  {en:'money',es:'dinero',ph:'/ˈmʌni/',cat:'Compras',ex:'"How much <b>money</b>? (¿Cuánto <b>dinero</b>?)"'},
+  {en:'how much',es:'cuánto cuesta',ph:'/haʊ mʌtʃ/',cat:'Compras',ex:'"<b>How much</b> is this? (¿<b>Cuánto cuesta</b>?)"'},
+  {en:'expensive',es:'caro',ph:'/ɪkˈspɛnsɪv/',cat:'Compras',ex:'"That\'s too <b>expensive</b>! (¡Eso está muy <b>caro</b>!)"'},
+  {en:'time',es:'tiempo / hora',ph:'/taɪm/',cat:'Básico',ex:'"What <b>time</b> is it? (¿Qué hora es?)"'},
+  {en:'friend',es:'amigo',ph:'/frɛnd/',cat:'Personas',ex:'"She is my best <b>friend</b>. (Ella es mi mejor <b>amiga</b>.)"'},
+  {en:'family',es:'familia',ph:'/ˈfæməli/',cat:'Personas',ex:'"I love my <b>family</b>. (Amo a mi <b>familia</b>.)"'},
+  {en:'doctor',es:'médico',ph:'/ˈdɒktər/',cat:'Salud',ex:'"I need a <b>doctor</b>. (Necesito un <b>médico</b>.)"'},
+  {en:'car',es:'carro',ph:'/kɑːr/',cat:'Transporte',ex:'"I drive my <b>car</b>. (Manejo mi <b>carro</b>.)"'},
+  {en:'bus',es:'bus',ph:'/bʌs/',cat:'Transporte',ex:'"I take the <b>bus</b>. (Tomo el <b>bus</b>.)"'},
+  {en:'taxi',es:'taxi',ph:'/ˈtæksi/',cat:'Transporte',ex:'"I need a <b>taxi</b>. (Necesito un <b>taxi</b>.)"'},
+  {en:'hotel',es:'hotel',ph:'/hoʊˈtɛl/',cat:'Viajes',ex:'"I have a reservation at the <b>hotel</b>. (Tengo reservación en el <b>hotel</b>.)"'},
+  {en:'sun',es:'sol',ph:'/sʌn/',cat:'Clima',ex:'"The <b>sun</b> is bright. (El <b>sol</b> brilla.)"'},
+  {en:'rain',es:'lluvia',ph:'/reɪn/',cat:'Clima',ex:'"It\'s going to <b>rain</b>. (Va a <b>llover</b>.)"'},
+  {en:'hot',es:'caluroso',ph:'/hɒt/',cat:'Clima',ex:'"It\'s very <b>hot</b>! (¡Está muy <b>caluroso</b>!)"'},
+  {en:'cold',es:'frío',ph:'/koʊld/',cat:'Clima',ex:'"I feel <b>cold</b>. (Tengo <b>frío</b>.)"'},
+  {en:'eat',es:'comer',ph:'/iːt/',cat:'Verbos',ex:'"I want to <b>eat</b> pizza. (Quiero <b>comer</b> pizza.)"'},
+  {en:'drink',es:'beber / tomar',ph:'/drɪŋk/',cat:'Verbos',ex:'"Would you like to <b>drink</b> something? (¿Quieres <b>tomar</b> algo?)"'},
+  {en:'go',es:'ir',ph:'/ɡoʊ/',cat:'Verbos',ex:'"Let\'s <b>go</b>! (¡<b>Vamos</b>!)"'},
+  {en:'understand',es:'entender',ph:'/ˌʌndərˈstænd/',cat:'Verbos',ex:'"I don\'t <b>understand</b>. (No <b>entiendo</b>.)"'},
+  {en:'speak',es:'hablar',ph:'/spiːk/',cat:'Verbos',ex:'"Can you <b>speak</b> slowly? (¿Puede <b>hablar</b> despacio?)"'},
+  {en:'where',es:'dónde',ph:'/wɛr/',cat:'Preguntas',ex:'"<b>Where</b> is the hotel? (¿<b>Dónde</b> está el hotel?)"'},
+  {en:'what',es:'qué',ph:'/wɒt/',cat:'Preguntas',ex:'"<b>What</b> time is it? (¿<b>Qué</b> hora es?)"'},
+  {en:'when',es:'cuándo',ph:'/wɛn/',cat:'Preguntas',ex:'"<b>When</b> does it open? (¿<b>Cuándo</b> abre?)"'},
+  {en:'who',es:'quién',ph:'/huː/',cat:'Preguntas',ex:'"<b>Who</b> is that? (¿<b>Quién</b> es ese?)"'},
+  {en:'how',es:'cómo',ph:'/haʊ/',cat:'Preguntas',ex:'"<b>How</b> are you? (¿<b>Cómo</b> estás?)"'},
+];
+var ES_MAP={hola:'hello',adios:'goodbye','buenos dias':'good morning','buenas tardes':'good afternoon','buenas noches':'good night','por favor':'please',gracias:'thank you','lo siento':'sorry',disculpe:'excuse me',si:'yes',agua:'water',comida:'food',cafe:'coffee',casa:'house',perro:'dog',gato:'cat',feliz:'happy',triste:'sad',amor:'love',grande:'big','pequeno':'small',bueno:'good',malo:'bad',hermoso:'beautiful',trabajo:'work',dinero:'money',caro:'expensive',tiempo:'time',amigo:'friend',familia:'family','medico':'doctor',carro:'car',autobus:'bus',taxi:'taxi',hotel:'hotel',sol:'sun',lluvia:'rain','caliente':'hot','frio':'cold',comer:'eat',beber:'drink',ir:'go',entender:'understand',hablar:'speak',donde:'where',que:'what',cuando:'when',quien:'who',como:'how',ayuda:'help'};
+var dHistArr=[];
 
-// ══════════════════════════════
+function norm(s){return s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+
+function dsearch(q){
+  q=norm(q);
+  var r=document.getElementById('dRes');
+  if(!q){r.style.display='none';return;}
+  var enQ=ES_MAP[q]||q;
+  var found=
+    DICT.find(function(d){return norm(d.en)===enQ;})||
+    DICT.find(function(d){return norm(d.en)===q;})||
+    DICT.find(function(d){return norm(d.es)===q;})||
+    DICT.find(function(d){return norm(d.en).includes(q)||norm(d.es).includes(q);});
+  r.style.display='block';
+  if(!found){
+    r.innerHTML='<div style="text-align:center;padding:16px;color:#7777aa;font-size:.8rem;">😕 No encontramos "<strong>'+q+'</strong>"<br><small>Prueba: happy · house · work · hola · casa...</small></div>';
+    return;
+  }
+  if(dHistArr.indexOf(found.en)<0){dHistArr.unshift(found.en);if(dHistArr.length>8)dHistArr.pop();updDH();}
+  r.innerHTML=
+    '<div style="font-size:1.4rem;font-weight:700;color:#a78bfa;margin-bottom:2px;">'+found.en+'</div>'+
+    '<div style="font-size:.75rem;color:#7777aa;margin-bottom:8px;">'+found.ph+'</div>'+
+    '<button onclick="speakW(\''+found.en+'\')" style="background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:5px 13px;font-size:.73rem;color:#a78bfa;cursor:pointer;margin-bottom:8px;">🔊 Escuchar</button>'+
+    ' <span style="background:#1e1e38;border-radius:6px;padding:2px 9px;font-size:.65rem;color:#9999cc;">'+found.cat+'</span>'+
+    '<div style="font-size:.95rem;color:#e0e0f0;font-weight:600;margin:8px 0;">🇪🇸 '+found.es+'</div>'+
+    '<div style="font-size:.76rem;color:#9999bb;font-style:italic;line-height:1.7;">'+found.ex+'</div>';
+}
+
+function updDH(){
+  var h=document.getElementById('dHist');if(!h)return;
+  if(dHistArr.length===0){h.style.display='none';return;}
+  h.style.display='block';
+  document.getElementById('dChips').innerHTML=dHistArr.map(function(w){
+    return '<span class="dchip" onclick="document.getElementById(\'dsIn\').value=\''+w+'\';dsearch(\''+w+'\')">'+w+'</span>';
+  }).join('');
+}
+
+function openDict(){
+  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
+  document.getElementById('dictChip').classList.add('active');
+  document.getElementById('msgs').style.display='none';
+  document.getElementById('mainBottom').style.display='none';
+  document.getElementById('dictPanel').style.display='flex';
+  setTimeout(function(){var i=document.getElementById('dsIn');if(i)i.focus();},150);
+}
+
+function closeDict(){
+  document.getElementById('dictPanel').style.display='none';
+  document.getElementById('msgs').style.display='flex';
+  document.getElementById('mainBottom').style.display='block';
+  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
+  document.querySelectorAll('.tchip')[0].classList.add('active');
+}
+
+// ══════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════
+function autoResize(el){el.style.height='26px';el.style.height=Math.min(el.scrollHeight,76)+'px';}
+
+// ══════════════════════════════════════
 // INICIO
-// ══════════════════════════════
+// ══════════════════════════════════════
 function iniciar(){
   var v=document.getElementById('keyIn').value.trim();
   var err=document.getElementById('kerr');
@@ -488,125 +666,10 @@ function iniciar(){
   }
 })();
 
-// Fix mobile viewport on keyboard open
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize',function(){
     document.body.style.height=window.visualViewport.height+'px';
   });
-}
-
-// ══════════════════════════════
-// DICCIONARIO
-// ══════════════════════════════
-var DICT=[
-  {en:'hello',es:'hola',ph:'/həˈloʊ/',cat:'Saludos',ex:'"<b>Hello</b>! My name is Ana. (¡<b>Hola</b>! Me llamo Ana.)"'},
-  {en:'goodbye',es:'adiós',ph:'/ɡʊdˈbaɪ/',cat:'Saludos',ex:'"<b>Goodbye</b>! See you tomorrow. (¡<b>Adiós</b>! Hasta mañana.)"'},
-  {en:'good morning',es:'buenos días',ph:'/ɡʊd ˈmɔːrnɪŋ/',cat:'Saludos',ex:'"<b>Good morning</b>! How are you? (¡<b>Buenos días</b>! ¿Cómo estás?)"'},
-  {en:'good afternoon',es:'buenas tardes',ph:'/ɡʊd ˌæftərˈnuːn/',cat:'Saludos',ex:'"<b>Good afternoon</b>! Welcome. (¡<b>Buenas tardes</b>! Bienvenido.)"'},
-  {en:'good night',es:'buenas noches',ph:'/ɡʊd naɪt/',cat:'Saludos',ex:'"<b>Good night</b>! See you tomorrow. (¡<b>Buenas noches</b>! Hasta mañana.)"'},
-  {en:'please',es:'por favor',ph:'/pliːz/',cat:'Cortesía',ex:'"Water, <b>please</b>. (Agua, <b>por favor</b>.)"'},
-  {en:'thank you',es:'gracias',ph:'/θæŋk juː/',cat:'Cortesía',ex:'"<b>Thank you</b> very much! (¡Muchas <b>gracias</b>!)"'},
-  {en:'sorry',es:'lo siento',ph:'/ˈsɒri/',cat:'Cortesía',ex:'"<b>Sorry</b>, I don't understand. (<b>Lo siento</b>, no entiendo.)"'},
-  {en:'excuse me',es:'disculpe',ph:'/ɪkˈskjuːz miː/',cat:'Cortesía',ex:'"<b>Excuse me</b>, where is the bathroom? (<b>Disculpe</b>, ¿dónde está el baño?)"'},
-  {en:'yes',es:'sí',ph:'/jɛs/',cat:'Básico',ex:'"<b>Yes</b>, I understand. (<b>Sí</b>, entiendo.)"'},
-  {en:'no',es:'no',ph:'/noʊ/',cat:'Básico',ex:'"<b>No</b>, thank you. (<b>No</b>, gracias.)"'},
-  {en:'help',es:'ayuda',ph:'/hɛlp/',cat:'Básico',ex:'"I need <b>help</b>! (¡Necesito <b>ayuda</b>!)"'},
-  {en:'water',es:'agua',ph:'/ˈwɔːtər/',cat:'Comida',ex:'"Can I have some <b>water</b>? (¿Me da <b>agua</b>?)"'},
-  {en:'food',es:'comida',ph:'/fuːd/',cat:'Comida',ex:'"The <b>food</b> is delicious! (¡La <b>comida</b> está deliciosa!)"'},
-  {en:'coffee',es:'café',ph:'/ˈkɒfi/',cat:'Comida',ex:'"I would like a <b>coffee</b>. (Quisiera un <b>café</b>.)"'},
-  {en:'house',es:'casa',ph:'/haʊs/',cat:'Hogar',ex:'"I live in a big <b>house</b>. (Vivo en una <b>casa</b> grande.)"'},
-  {en:'dog',es:'perro',ph:'/dɒɡ/',cat:'Animales',ex:'"My <b>dog</b> is friendly. (Mi <b>perro</b> es amigable.)"'},
-  {en:'cat',es:'gato',ph:'/kæt/',cat:'Animales',ex:'"The <b>cat</b> is sleeping. (El <b>gato</b> está durmiendo.)"'},
-  {en:'happy',es:'feliz',ph:'/ˈhæpi/',cat:'Emociones',ex:'"I am very <b>happy</b>! (¡Estoy muy <b>feliz</b>!)"'},
-  {en:'sad',es:'triste',ph:'/sæd/',cat:'Emociones',ex:'"Why are you <b>sad</b>? (¿Por qué estás <b>triste</b>?)"'},
-  {en:'love',es:'amor / amar',ph:'/lʌv/',cat:'Emociones',ex:'"I <b>love</b> this song. (Me <b>encanta</b> esta canción.)"'},
-  {en:'big',es:'grande',ph:'/bɪɡ/',cat:'Adjetivos',ex:'"This is a <b>big</b> city. (Esta es una ciudad <b>grande</b>.)"'},
-  {en:'small',es:'pequeño',ph:'/smɔːl/',cat:'Adjetivos',ex:'"I have a <b>small</b> dog. (Tengo un perro <b>pequeño</b>.)"'},
-  {en:'good',es:'bueno',ph:'/ɡʊd/',cat:'Adjetivos',ex:'"This is very <b>good</b>! (¡Esto está muy <b>bueno</b>!)"'},
-  {en:'bad',es:'malo',ph:'/bæd/',cat:'Adjetivos',ex:'"This is <b>bad</b>. (Esto es <b>malo</b>.)"'},
-  {en:'beautiful',es:'hermoso',ph:'/ˈbjuːtɪfəl/',cat:'Adjetivos',ex:'"The sunset is <b>beautiful</b>. (El atardecer es <b>hermoso</b>.)"'},
-  {en:'work',es:'trabajo',ph:'/wɜːrk/',cat:'Trabajo',ex:'"I <b>work</b> every day. (<b>Trabajo</b> todos los días.)"'},
-  {en:'money',es:'dinero',ph:'/ˈmʌni/',cat:'Compras',ex:'"How much <b>money</b>? (¿Cuánto <b>dinero</b>?)"'},
-  {en:'how much',es:'cuánto cuesta',ph:'/haʊ mʌtʃ/',cat:'Compras',ex:'"<b>How much</b> is this? (¿<b>Cuánto cuesta</b> esto?)"'},
-  {en:'expensive',es:'caro',ph:'/ɪkˈspɛnsɪv/',cat:'Compras',ex:'"That's too <b>expensive</b>! (¡Eso está muy <b>caro</b>!)"'},
-  {en:'time',es:'tiempo / hora',ph:'/taɪm/',cat:'Básico',ex:'"What <b>time</b> is it? (¿Qué hora es?)"'},
-  {en:'friend',es:'amigo',ph:'/frɛnd/',cat:'Personas',ex:'"She is my best <b>friend</b>. (Ella es mi mejor <b>amiga</b>.)"'},
-  {en:'family',es:'familia',ph:'/ˈfæməli/',cat:'Personas',ex:'"I love my <b>family</b>. (Amo a mi <b>familia</b>.)"'},
-  {en:'doctor',es:'médico',ph:'/ˈdɒktər/',cat:'Salud',ex:'"I need a <b>doctor</b>. (Necesito un <b>médico</b>.)"'},
-  {en:'hospital',es:'hospital',ph:'/ˈhɒspɪtl/',cat:'Salud',ex:'"Where is the <b>hospital</b>? (¿Dónde está el <b>hospital</b>?)"'},
-  {en:'car',es:'carro',ph:'/kɑːr/',cat:'Transporte',ex:'"I drive my <b>car</b>. (Manejo mi <b>carro</b>.)"'},
-  {en:'bus',es:'bus',ph:'/bʌs/',cat:'Transporte',ex:'"I take the <b>bus</b>. (Tomo el <b>bus</b>.)"'},
-  {en:'taxi',es:'taxi',ph:'/ˈtæksi/',cat:'Transporte',ex:'"I need a <b>taxi</b>. (Necesito un <b>taxi</b>.)"'},
-  {en:'hotel',es:'hotel',ph:'/hoʊˈtɛl/',cat:'Viajes',ex:'"I have a reservation at the <b>hotel</b>. (Tengo reservación en el <b>hotel</b>.)"'},
-  {en:'sun',es:'sol',ph:'/sʌn/',cat:'Clima',ex:'"The <b>sun</b> is bright. (El <b>sol</b> está brillante.)"'},
-  {en:'rain',es:'lluvia',ph:'/reɪn/',cat:'Clima',ex:'"It's going to <b>rain</b>. (Va a <b>llover</b>.)"'},
-  {en:'hot',es:'caluroso',ph:'/hɒt/',cat:'Clima',ex:'"It's very <b>hot</b> today. (Está muy <b>caluroso</b> hoy.)"'},
-  {en:'cold',es:'frío',ph:'/koʊld/',cat:'Clima',ex:'"I feel <b>cold</b>. (Tengo <b>frío</b>.)"'},
-  {en:'eat',es:'comer',ph:'/iːt/',cat:'Verbos',ex:'"I want to <b>eat</b> pizza. (Quiero <b>comer</b> pizza.)"'},
-  {en:'drink',es:'beber / tomar',ph:'/drɪŋk/',cat:'Verbos',ex:'"Would you like to <b>drink</b> something? (¿Quieres <b>tomar</b> algo?)"'},
-  {en:'go',es:'ir',ph:'/ɡoʊ/',cat:'Verbos',ex:'"Let's <b>go</b>! (¡<b>Vamos</b>!)"'},
-  {en:'understand',es:'entender',ph:'/ˌʌndərˈstænd/',cat:'Verbos',ex:'"I don't <b>understand</b>. (No <b>entiendo</b>.)"'},
-  {en:'speak',es:'hablar',ph:'/spiːk/',cat:'Verbos',ex:'"Can you <b>speak</b> slowly? (¿Puede <b>hablar</b> despacio?)"'},
-  {en:'where',es:'dónde',ph:'/wɛr/',cat:'Preguntas',ex:'"<b>Where</b> is the hotel? (¿<b>Dónde</b> está el hotel?)"'},
-  {en:'what',es:'qué',ph:'/wɒt/',cat:'Preguntas',ex:'"<b>What</b> time is it? (¿<b>Qué</b> hora es?)"'},
-  {en:'when',es:'cuándo',ph:'/wɛn/',cat:'Preguntas',ex:'"<b>When</b> does it open? (¿<b>Cuándo</b> abre?)"'},
-  {en:'who',es:'quién',ph:'/huː/',cat:'Preguntas',ex:'"<b>Who</b> is that? (¿<b>Quién</b> es ese?)"'},
-  {en:'how',es:'cómo',ph:'/haʊ/',cat:'Preguntas',ex:'"<b>How</b> are you? (¿<b>Cómo</b> estás?)"'},
-];
-var ES_MAP={hola:'hello',adios:'goodbye','buenos dias':'good morning','buenas tardes':'good afternoon','buenas noches':'good night','por favor':'please',gracias:'thank you','lo siento':'sorry',disculpe:'excuse me',si:'yes',agua:'water',comida:'food',cafe:'coffee',casa:'house',perro:'dog',gato:'cat',feliz:'happy',triste:'sad',amor:'love',grande:'big','pequeno':'small',bueno:'good',malo:'bad',hermoso:'beautiful',trabajo:'work',dinero:'money',caro:'expensive',tiempo:'time',amigo:'friend',familia:'family','medico':'doctor',hospital:'hospital',carro:'car',autobus:'bus',taxi:'taxi',hotel:'hotel',sol:'sun',lluvia:'rain','caliente':'hot','frio':'cold',comer:'eat',beber:'drink',ir:'go',entender:'understand',hablar:'speak',donde:'where',que:'what',cuando:'when',quien:'who',como:'how',ayuda:'help'};
-
-var dHistArr=[];
-function norm(s){return s.toLowerCase().trim().normalize('NFD').replace(/[̀-ͯ]/g,'');}
-
-function dsearch(q){
-  q=norm(q);
-  if(!q){document.getElementById('dRes').style.display='none';return;}
-  var enQ=ES_MAP[q]||q;
-  var found=DICT.find(function(d){return norm(d.en)===enQ;})||
-            DICT.find(function(d){return norm(d.en)===q;})||
-            DICT.find(function(d){return norm(d.es)===q;})||
-            DICT.find(function(d){return norm(d.en).includes(q)||norm(d.es).includes(q);});
-  var r=document.getElementById('dRes');
-  r.style.display='block';
-  if(!found){
-    r.innerHTML='<div style="text-align:center;padding:16px;color:#7777aa;font-size:.8rem;">😕 No encontramos "<strong>'+q+'</strong>"<br><small>Prueba: happy · house · work · hola · casa...</small></div>';
-    return;
-  }
-  if(dHistArr.indexOf(found.en)<0){dHistArr.unshift(found.en);if(dHistArr.length>8)dHistArr.pop();updDH();}
-  r.innerHTML=
-    '<div style="font-size:1.4rem;font-weight:700;color:#a78bfa;margin-bottom:2px;">'+found.en+'</div>'+
-    '<div style="font-size:.75rem;color:#7777aa;margin-bottom:8px;">'+found.ph+'</div>'+
-    '<button onclick="speakW(''+found.en+'')" style="background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:5px 13px;font-size:.73rem;color:#a78bfa;cursor:pointer;margin-bottom:8px;">🔊 Escuchar</button>'+
-    ' <span style="background:#1e1e38;border-radius:6px;padding:2px 9px;font-size:.65rem;color:#9999cc;">'+found.cat+'</span>'+
-    '<div style="font-size:.95rem;color:#e0e0f0;font-weight:600;margin:8px 0;">🇪🇸 '+found.es+'</div>'+
-    '<div style="font-size:.76rem;color:#9999bb;font-style:italic;line-height:1.7;">'+found.ex+'</div>';
-}
-
-function updDH(){
-  var h=document.getElementById('dHist');
-  if(!h)return;
-  if(dHistArr.length===0){h.style.display='none';return;}
-  h.style.display='block';
-  document.getElementById('dChips').innerHTML=dHistArr.map(function(w){
-    return '<span onclick="document.getElementById('dsIn').value=''+w+'';dsearch(''+w+'')" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:13px;padding:4px 11px;font-size:.71rem;color:#9999cc;cursor:pointer;">'+w+'</span>';
-  }).join('');
-}
-
-function openDict(){
-  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
-  document.getElementById('dictChip').classList.add('active');
-  document.getElementById('msgs').style.display='none';
-  document.getElementById('mainBottom').style.display='none';
-  document.getElementById('dictPanel').style.display='flex';
-  setTimeout(function(){var i=document.getElementById('dsIn');if(i)i.focus();},200);
-}
-
-function closeDict(){
-  document.getElementById('dictPanel').style.display='none';
-  document.getElementById('msgs').style.display='flex';
-  document.getElementById('mainBottom').style.display='block';
-  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
-  document.querySelectorAll('.tchip')[0].classList.add('active');
 }
 </script>
 </body>
