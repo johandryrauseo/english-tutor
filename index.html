@@ -138,35 +138,35 @@ textarea.msgin::placeholder{color:#444466;}
     <div class="tchip" onclick="setTopic(this,'family')">👨‍👩‍👧 Familia</div>
     <div class="tchip" onclick="setTopic(this,'health')">🏥 Salud</div>
     <div class="tchip" onclick="setTopic(this,'weather')">⛅ Clima</div>
-    <div class="tchip" onclick="openDict()">🔍 Diccionario</div>
+    <div class="tchip" id="dictChip" onclick="openDict()">🔍 Diccionario</div>
   </div>
 </div>
 
-<!-- DICCIONARIO PANEL -->
+<!-- DICTIONARY PANEL -->
 <div id="dictPanel" style="display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
-  <div style="padding:10px 12px 6px;background:#111122;border-bottom:1px solid #1e1e3a;display:flex;align-items:center;gap:8px;">
+  <div style="padding:9px 12px;background:#111122;border-bottom:1px solid #1e1e3a;display:flex;gap:8px;align-items:center;">
     <div style="position:relative;flex:1;">
       <input id="dsIn" type="text" placeholder="Busca: casa, dog, happy, gracias..."
-        style="width:100%;background:#1a1a2e;border:2px solid #6c63ff;border-radius:11px;padding:9px 38px 9px 13px;color:#e8e8f0;font-size:.84rem;outline:none;font-family:inherit;"
-        oninput="dsearch(this.value)" onkeydown="if(event.key==='Enter')dsearch(this.value)"/>
-      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;">🔍</span>
+        style="width:100%;background:#1a1a2e;border:2px solid #6c63ff;border-radius:11px;padding:9px 38px 9px 13px;color:#e8e8f0;font-size:.83rem;outline:none;font-family:inherit;"
+        oninput="dsearch(this.value)" onkeydown="if(event.key==='Enter')dsearch(this.value)" autocorrect="off" spellcheck="false"/>
+      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
     </div>
-    <button onclick="closeDict()" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:9px;padding:7px 12px;color:#9999cc;cursor:pointer;font-size:.75rem;flex-shrink:0;">← Volver</button>
+    <button onclick="closeDict()" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:9px;padding:7px 12px;color:#9999cc;cursor:pointer;font-size:.74rem;white-space:nowrap;flex-shrink:0;">← Volver</button>
   </div>
   <div style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;">
     <div id="dRes" style="display:none;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:14px;"></div>
     <div id="dHist" style="display:none;">
-      <div style="font-size:.7rem;color:#7777aa;margin-bottom:6px;">🕐 Recientes:</div>
+      <div style="font-size:.69rem;color:#7777aa;margin-bottom:6px;">🕐 Recientes:</div>
       <div id="dChips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
     </div>
-    <div style="font-size:.75rem;color:#7777aa;text-align:center;padding:10px;">
+    <div style="text-align:center;padding:16px 0;color:#7777aa;font-size:.75rem;line-height:1.8;">
       Busca en <strong style="color:#a78bfa;">inglés</strong> o <strong style="color:#a78bfa;">español</strong><br>
-      <span style="font-size:.68rem;">Ej: hello, casa, happy, trabajo, beautiful...</span>
+      <span style="font-size:.68rem;color:#555577;">Ej: hello · casa · happy · trabajo · beautiful · gato</span>
     </div>
   </div>
 </div>
 
-<div class="msgs" id="msgs" style="flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:13px;"></div>
+<div class="msgs" id="msgs"></div>
 
 <div class="bottom" id="mainBottom">
   <div class="tscript" id="tscript"></div>
@@ -215,60 +215,97 @@ function speakText(text){
 function speakW(w){if(!synth)return;synth.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=0.78;if(voice)u.voice=voice;synth.speak(u);}
 
 // ══════════════════════════════
-// MICRÓFONO — continuo, no envía en pausa
+// MICRÓFONO — acumula manualmente, envía solo al tocar ⏹️
 // ══════════════════════════════
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+var accumulated='';   // texto acumulado entre reinicios
+var wantStop=false;   // el usuario tocó ⏹️
 
 function toggleMic(){
   if(!SR){alert('Usa Google Chrome para hablar por voz.');return;}
-  if(listening){rec.stop();return;} // stop → onend → send
+  if(listening){
+    // Usuario toca ⏹️ — parar y enviar
+    wantStop=true;
+    rec.stop();
+    return;
+  }
   if(speaking&&synth)synth.cancel();
+  accumulated='';
+  wantStop=false;
+  startRec();
+}
+
+function startRec(){
   rec=new SR();
   rec.lang='en-US';
-  rec.continuous=true;       // no corta en pausas
+  rec.continuous=false;    // más estable en móvil
   rec.interimResults=true;
-  finalTxt='';
+
   rec.onstart=function(){
-    listening=true;finalTxt='';
+    listening=true;
     document.getElementById('micBtn').classList.add('on');
     document.getElementById('micBtn').textContent='⏹️';
     document.getElementById('aav').classList.add('lst');
     setSt('r');
     showTs('🎤 Habla... toca ⏹️ cuando termines');
   };
+
   rec.onresult=function(e){
-    // Reconstruir desde cero cada vez para evitar duplicados
     var final='', interim='';
     for(var i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) final+=e.results[i][0].transcript+' ';
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
       else interim+=e.results[i][0].transcript;
     }
-    finalTxt=final; // reemplazar, nunca acumular
-    var display=(final+interim).trim();
-    showTs('🎤 '+display);
-    document.getElementById('msgIn').value=display;
+    // Mostrar: lo acumulado anterior + este resultado
+    var preview=(accumulated+' '+final+interim).trim();
+    showTs('🎤 '+preview);
+    document.getElementById('msgIn').value=preview;
   };
+
   rec.onerror=function(e){
-    if(e.error==='no-speech')return; // ignora pausas silenciosas
+    if(e.error==='no-speech'){
+      // Pausa silenciosa — si el usuario no tocó ⏹️, reiniciar
+      listening=false;
+      if(!wantStop) restartRec();
+      return;
+    }
+    if(e.error==='aborted') return; // parada manual, ignorar
     listening=false;
     document.getElementById('micBtn').classList.remove('on');
     document.getElementById('micBtn').textContent='🎤';
     document.getElementById('aav').classList.remove('lst');
     setSt('');
-    showTs(e.error==='not-allowed'?'⚠️ Permiso denegado. Permite el micrófono.':'Error: '+e.error);
+    showTs(e.error==='not-allowed'?'⚠️ Permiso denegado. Permite el micrófono en Chrome.':'Error: '+e.error);
     setTimeout(hideTs,3000);
   };
+
   rec.onend=function(){
     listening=false;
-    document.getElementById('micBtn').classList.remove('on');
-    document.getElementById('micBtn').textContent='🎤';
-    document.getElementById('aav').classList.remove('lst');
-    setSt('');
-    hideTs();
-    var t=(finalTxt||document.getElementById('msgIn').value||'').trim();
-    if(t){document.getElementById('msgIn').value=t;send();}
+    if(wantStop){
+      // Usuario tocó ⏹️ — enviar lo acumulado
+      document.getElementById('micBtn').classList.remove('on');
+      document.getElementById('micBtn').textContent='🎤';
+      document.getElementById('aav').classList.remove('lst');
+      setSt('');
+      hideTs();
+      var t=(document.getElementById('msgIn').value||'').trim();
+      if(t) send();
+    } else {
+      // Fin natural (pausa) — acumular y reiniciar
+      var cur=(document.getElementById('msgIn').value||'').trim();
+      if(cur) accumulated=cur;
+      restartRec();
+    }
   };
-  try{rec.start();}catch(e){showTs('Error al iniciar micrófono.');}
+
+  try{ rec.start(); }catch(e){ showTs('Error al iniciar micrófono: '+e.message); }
+}
+
+function restartRec(){
+  // Pequeña pausa antes de reiniciar para que Chrome se estabilice
+  setTimeout(function(){
+    if(!wantStop) startRec();
+  }, 150);
 }
 
 function showTs(t){var el=document.getElementById('tscript');el.textContent=t;el.classList.add('show');}
@@ -426,120 +463,6 @@ function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
 function resize(el){el.style.height='26px';el.style.height=Math.min(el.scrollHeight,76)+'px';}
 
 // ══════════════════════════════
-// DICCIONARIO
-// ══════════════════════════════
-var DICT=[
-  {en:'hello',es:'hola',ph:'/həˈloʊ/',cat:'Saludos',ex:'"<b>Hello</b>! My name is Ana. (¡<b>Hola</b>! Me llamo Ana.)"'},
-  {en:'goodbye',es:'adiós',ph:'/ɡʊdˈbaɪ/',cat:'Saludos',ex:'"<b>Goodbye</b>! See you tomorrow. (¡<b>Adiós</b>! Hasta mañana.)"'},
-  {en:'good morning',es:'buenos días',ph:'/ɡʊd ˈmɔːrnɪŋ/',cat:'Saludos',ex:'"<b>Good morning</b>! How are you? (¡<b>Buenos días</b>! ¿Cómo estás?)"'},
-  {en:'good afternoon',es:'buenas tardes',ph:'/ɡʊd ˌæftərˈnuːn/',cat:'Saludos',ex:'"<b>Good afternoon</b>! Welcome. (¡<b>Buenas tardes</b>! Bienvenido.)"'},
-  {en:'good night',es:'buenas noches',ph:'/ɡʊd naɪt/',cat:'Saludos',ex:'"<b>Good night</b>! See you tomorrow. (¡<b>Buenas noches</b>! Hasta mañana.)"'},
-  {en:'please',es:'por favor',ph:'/pliːz/',cat:'Cortesía',ex:'"Water, <b>please</b>. (Agua, <b>por favor</b>.)"'},
-  {en:'thank you',es:'gracias',ph:'/θæŋk juː/',cat:'Cortesía',ex:'"<b>Thank you</b> very much! (¡Muchas <b>gracias</b>!)"'},
-  {en:'sorry',es:'lo siento / perdón',ph:'/ˈsɒri/',cat:'Cortesía',ex:'"<b>Sorry</b>, I don\'t understand. (<b>Lo siento</b>, no entiendo.)"'},
-  {en:'excuse me',es:'disculpe / con permiso',ph:'/ɪkˈskjuːz miː/',cat:'Cortesía',ex:'"<b>Excuse me</b>, where is the bathroom? (<b>Disculpe</b>, ¿dónde está el baño?)"'},
-  {en:'yes',es:'sí',ph:'/jɛs/',cat:'Básico',ex:'"<b>Yes</b>, I understand. (<b>Sí</b>, entiendo.)"'},
-  {en:'no',es:'no',ph:'/noʊ/',cat:'Básico',ex:'"<b>No</b>, thank you. (<b>No</b>, gracias.)"'},
-  {en:'help',es:'ayuda / ayudar',ph:'/hɛlp/',cat:'Básico',ex:'"I need <b>help</b>! (¡Necesito <b>ayuda</b>!)"'},
-  {en:'water',es:'agua',ph:'/ˈwɔːtər/',cat:'Comida',ex:'"Can I have some <b>water</b>? (¿Me da <b>agua</b>?)"'},
-  {en:'food',es:'comida',ph:'/fuːd/',cat:'Comida',ex:'"The <b>food</b> is delicious! (¡La <b>comida</b> está deliciosa!)"'},
-  {en:'coffee',es:'café',ph:'/ˈkɒfi/',cat:'Comida',ex:'"I would like a <b>coffee</b>. (Quisiera un <b>café</b>.)"'},
-  {en:'house',es:'casa',ph:'/haʊs/',cat:'Hogar',ex:'"I live in a big <b>house</b>. (Vivo en una <b>casa</b> grande.)"'},
-  {en:'dog',es:'perro',ph:'/dɒɡ/',cat:'Animales',ex:'"My <b>dog</b> is friendly. (Mi <b>perro</b> es amigable.)"'},
-  {en:'cat',es:'gato',ph:'/kæt/',cat:'Animales',ex:'"The <b>cat</b> is sleeping. (El <b>gato</b> está durmiendo.)"'},
-  {en:'happy',es:'feliz / contento',ph:'/ˈhæpi/',cat:'Emociones',ex:'"I am very <b>happy</b>! (¡Estoy muy <b>feliz</b>!)"'},
-  {en:'sad',es:'triste',ph:'/sæd/',cat:'Emociones',ex:'"Why are you <b>sad</b>? (¿Por qué estás <b>triste</b>?)"'},
-  {en:'love',es:'amor / amar',ph:'/lʌv/',cat:'Emociones',ex:'"I <b>love</b> this song. (Me <b>encanta</b> esta canción.)"'},
-  {en:'big',es:'grande',ph:'/bɪɡ/',cat:'Adjetivos',ex:'"This is a <b>big</b> city. (Esta es una ciudad <b>grande</b>.)"'},
-  {en:'small',es:'pequeño',ph:'/smɔːl/',cat:'Adjetivos',ex:'"I have a <b>small</b> dog. (Tengo un perro <b>pequeño</b>.)"'},
-  {en:'good',es:'bueno / bien',ph:'/ɡʊd/',cat:'Adjetivos',ex:'"This is very <b>good</b>! (¡Esto está muy <b>bueno</b>!)"'},
-  {en:'bad',es:'malo / mal',ph:'/bæd/',cat:'Adjetivos',ex:'"This is <b>bad</b>. (Esto es <b>malo</b>.)"'},
-  {en:'beautiful',es:'hermoso / bonito',ph:'/ˈbjuːtɪfəl/',cat:'Adjetivos',ex:'"The sunset is <b>beautiful</b>. (El atardecer es <b>hermoso</b>.)"'},
-  {en:'work',es:'trabajo / trabajar',ph:'/wɜːrk/',cat:'Trabajo',ex:'"I <b>work</b> every day. (<b>Trabajo</b> todos los días.)"'},
-  {en:'money',es:'dinero',ph:'/ˈmʌni/',cat:'Compras',ex:'"How much <b>money</b>? (¿Cuánto <b>dinero</b>?)"'},
-  {en:'how much',es:'cuánto cuesta',ph:'/haʊ mʌtʃ/',cat:'Compras',ex:'"<b>How much</b> is this? (¿<b>Cuánto cuesta</b> esto?)"'},
-  {en:'expensive',es:'caro',ph:'/ɪkˈspɛnsɪv/',cat:'Compras',ex:'"That\'s too <b>expensive</b>. (Eso está muy <b>caro</b>.)"'},
-  {en:'time',es:'tiempo / hora',ph:'/taɪm/',cat:'Básico',ex:'"What <b>time</b> is it? (¿Qué hora es?)"'},
-  {en:'friend',es:'amigo / amiga',ph:'/frɛnd/',cat:'Personas',ex:'"She is my best <b>friend</b>. (Ella es mi mejor <b>amiga</b>.)"'},
-  {en:'family',es:'familia',ph:'/ˈfæməli/',cat:'Personas',ex:'"I love my <b>family</b>. (Amo a mi <b>familia</b>.)"'},
-  {en:'doctor',es:'médico / doctor',ph:'/ˈdɒktər/',cat:'Salud',ex:'"I need a <b>doctor</b>. (Necesito un <b>médico</b>.)"'},
-  {en:'hospital',es:'hospital',ph:'/ˈhɒspɪtl/',cat:'Salud',ex:'"Where is the <b>hospital</b>? (¿Dónde está el <b>hospital</b>?)"'},
-  {en:'car',es:'carro / auto',ph:'/kɑːr/',cat:'Transporte',ex:'"I drive my <b>car</b>. (Manejo mi <b>carro</b>.)"'},
-  {en:'bus',es:'bus / autobús',ph:'/bʌs/',cat:'Transporte',ex:'"I take the <b>bus</b>. (Tomo el <b>bus</b>.)"'},
-  {en:'taxi',es:'taxi',ph:'/ˈtæksi/',cat:'Transporte',ex:'"I need a <b>taxi</b>. (Necesito un <b>taxi</b>.)"'},
-  {en:'hotel',es:'hotel',ph:'/hoʊˈtɛl/',cat:'Viajes',ex:'"I have a reservation at the <b>hotel</b>. (Tengo reservación en el <b>hotel</b>.)"'},
-  {en:'sun',es:'sol',ph:'/sʌn/',cat:'Clima',ex:'"The <b>sun</b> is bright. (El <b>sol</b> está brillante.)"'},
-  {en:'rain',es:'lluvia',ph:'/reɪn/',cat:'Clima',ex:'"It\'s going to <b>rain</b>. (Va a <b>llover</b>.)"'},
-  {en:'hot',es:'caliente / caluroso',ph:'/hɒt/',cat:'Clima',ex:'"It\'s very <b>hot</b> today. (Está muy <b>caluroso</b> hoy.)"'},
-  {en:'cold',es:'frío',ph:'/koʊld/',cat:'Clima',ex:'"I feel <b>cold</b>. (Tengo <b>frío</b>.)"'},
-  {en:'eat',es:'comer',ph:'/iːt/',cat:'Verbos',ex:'"I want to <b>eat</b> pizza. (Quiero <b>comer</b> pizza.)"'},
-  {en:'drink',es:'beber / tomar',ph:'/drɪŋk/',cat:'Verbos',ex:'"Would you like to <b>drink</b> something? (¿Quieres <b>tomar</b> algo?)"'},
-  {en:'go',es:'ir',ph:'/ɡoʊ/',cat:'Verbos',ex:'"Let\'s <b>go</b>! (¡<b>Vamos</b>!)"'},
-  {en:'understand',es:'entender',ph:'/ˌʌndərˈstænd/',cat:'Verbos',ex:'"I don\'t <b>understand</b>. (No <b>entiendo</b>.)"'},
-  {en:'speak',es:'hablar',ph:'/spiːk/',cat:'Verbos',ex:'"Can you <b>speak</b> slowly? (¿Puede <b>hablar</b> despacio?)"'},
-  {en:'where',es:'dónde',ph:'/wɛr/',cat:'Preguntas',ex:'"<b>Where</b> is the hotel? (¿<b>Dónde</b> está el hotel?)"'},
-  {en:'what',es:'qué',ph:'/wɒt/',cat:'Preguntas',ex:'"<b>What</b> time is it? (¿<b>Qué</b> hora es?)"'},
-  {en:'when',es:'cuándo',ph:'/wɛn/',cat:'Preguntas',ex:'"<b>When</b> does it open? (¿<b>Cuándo</b> abre?)"'},
-  {en:'who',es:'quién',ph:'/huː/',cat:'Preguntas',ex:'"<b>Who</b> is that? (¿<b>Quién</b> es ese?)"'},
-  {en:'how',es:'cómo',ph:'/haʊ/',cat:'Preguntas',ex:'"<b>How</b> are you? (¿<b>Cómo</b> estás?)"'},
-];
-// ES→EN map
-var ES_MAP={hola:'hello',adios:'goodbye','buenos dias':'good morning','buenas tardes':'good afternoon','buenas noches':'good night','por favor':'please',gracias:'thank you','lo siento':'sorry',disculpe:'excuse me',si:'yes',agua:'water',comida:'food',cafe:'coffee',casa:'house',perro:'dog',gato:'cat',feliz:'happy',triste:'sad',amor:'love',grande:'big','pequeño':'small',bueno:'good',malo:'bad',hermoso:'beautiful',trabajo:'work',dinero:'money',caro:'expensive',tiempo:'time',amigo:'friend',amiga:'friend',familia:'family','medico':'doctor',hospital:'hospital',carro:'car',autobus:'bus',taxi:'taxi',hotel:'hotel',sol:'sun',lluvia:'rain','caliente':'hot','frio':'cold',comer:'eat',beber:'drink',ir:'go',entender:'understand',hablar:'speak',donde:'where',que:'what',cuando:'when',quien:'who',como:'how',ayuda:'help'};
-
-var dHistArr=[];
-function norm(s){return s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-
-function dsearch(q){
-  q=norm(q);if(!q){document.getElementById('dRes').style.display='none';return;}
-  // Try ES→EN redirect
-  var enQ=ES_MAP[q]||q;
-  var found=DICT.find(function(d){return norm(d.en)===enQ;})||
-            DICT.find(function(d){return norm(d.en)===q;})||
-            DICT.find(function(d){return norm(d.es).replace(/\s*\/\s*.+/,'')===q;})||
-            DICT.find(function(d){return norm(d.en).includes(q)||norm(d.es).includes(q);});
-  var r=document.getElementById('dRes');r.style.display='block';
-  if(!found){
-    r.innerHTML='<div style="text-align:center;padding:14px;color:#7777aa;font-size:.8rem;">😕 No encontramos "<strong>'+q+'</strong>".<br><small>Prueba: happy, house, work, hola, casa...</small></div>';
-    return;
-  }
-  if(dHistArr.indexOf(found.en)<0){dHistArr.unshift(found.en);if(dHistArr.length>8)dHistArr.pop();updDH();}
-  r.innerHTML=
-    '<div style="font-size:1.4rem;font-weight:700;color:#a78bfa;margin-bottom:2px;">'+found.en+'</div>'+
-    '<div style="font-size:.76rem;color:#7777aa;margin-bottom:7px;">'+found.ph+'</div>'+
-    '<button onclick="speakW(\''+found.en+'\')" style="background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:4px 13px;font-size:.73rem;color:#a78bfa;cursor:pointer;margin-bottom:8px;">🔊 Escuchar</button>'+
-    '<div style="display:inline-block;background:#1e1e38;border-radius:6px;padding:2px 9px;font-size:.66rem;color:#9999cc;margin-left:6px;margin-bottom:8px;">'+found.cat+'</div>'+
-    '<div style="font-size:.95rem;color:#e0e0f0;font-weight:600;margin-bottom:8px;">🇪🇸 '+found.es+'</div>'+
-    '<div style="font-size:.77rem;color:#9999bb;font-style:italic;line-height:1.7;">'+found.ex+'</div>';
-}
-
-function updDH(){
-  var h=document.getElementById('dHist');if(!h)return;
-  if(dHistArr.length===0){h.style.display='none';return;}
-  h.style.display='block';
-  document.getElementById('dChips').innerHTML=dHistArr.map(function(w){
-    return '<div onclick="document.getElementById(\'dsIn\').value=\''+w+'\';dsearch(\''+w+'\')" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:13px;padding:4px 10px;font-size:.71rem;color:#9999cc;cursor:pointer;">'+w+'</div>';
-  }).join('');
-}
-
-function openDict(){
-  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
-  document.querySelectorAll('.tchip')[document.querySelectorAll('.tchip').length-1].classList.add('active');
-  document.getElementById('msgs').style.display='none';
-  document.getElementById('mainBottom').style.display='none';
-  document.getElementById('dictPanel').style.display='flex';
-  setTimeout(function(){document.getElementById('dsIn').focus();},100);
-}
-
-function closeDict(){
-  document.getElementById('dictPanel').style.display='none';
-  document.getElementById('msgs').style.display='flex';
-  document.getElementById('mainBottom').style.display='block';
-  // Re-activate current topic chip
-  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
-  document.querySelectorAll('.tchip')[0].classList.add('active');
-}
-
-// ══════════════════════════════
 // INICIO
 // ══════════════════════════════
 function iniciar(){
@@ -570,6 +493,120 @@ if(window.visualViewport){
   window.visualViewport.addEventListener('resize',function(){
     document.body.style.height=window.visualViewport.height+'px';
   });
+}
+
+// ══════════════════════════════
+// DICCIONARIO
+// ══════════════════════════════
+var DICT=[
+  {en:'hello',es:'hola',ph:'/həˈloʊ/',cat:'Saludos',ex:'"<b>Hello</b>! My name is Ana. (¡<b>Hola</b>! Me llamo Ana.)"'},
+  {en:'goodbye',es:'adiós',ph:'/ɡʊdˈbaɪ/',cat:'Saludos',ex:'"<b>Goodbye</b>! See you tomorrow. (¡<b>Adiós</b>! Hasta mañana.)"'},
+  {en:'good morning',es:'buenos días',ph:'/ɡʊd ˈmɔːrnɪŋ/',cat:'Saludos',ex:'"<b>Good morning</b>! How are you? (¡<b>Buenos días</b>! ¿Cómo estás?)"'},
+  {en:'good afternoon',es:'buenas tardes',ph:'/ɡʊd ˌæftərˈnuːn/',cat:'Saludos',ex:'"<b>Good afternoon</b>! Welcome. (¡<b>Buenas tardes</b>! Bienvenido.)"'},
+  {en:'good night',es:'buenas noches',ph:'/ɡʊd naɪt/',cat:'Saludos',ex:'"<b>Good night</b>! See you tomorrow. (¡<b>Buenas noches</b>! Hasta mañana.)"'},
+  {en:'please',es:'por favor',ph:'/pliːz/',cat:'Cortesía',ex:'"Water, <b>please</b>. (Agua, <b>por favor</b>.)"'},
+  {en:'thank you',es:'gracias',ph:'/θæŋk juː/',cat:'Cortesía',ex:'"<b>Thank you</b> very much! (¡Muchas <b>gracias</b>!)"'},
+  {en:'sorry',es:'lo siento',ph:'/ˈsɒri/',cat:'Cortesía',ex:'"<b>Sorry</b>, I don't understand. (<b>Lo siento</b>, no entiendo.)"'},
+  {en:'excuse me',es:'disculpe',ph:'/ɪkˈskjuːz miː/',cat:'Cortesía',ex:'"<b>Excuse me</b>, where is the bathroom? (<b>Disculpe</b>, ¿dónde está el baño?)"'},
+  {en:'yes',es:'sí',ph:'/jɛs/',cat:'Básico',ex:'"<b>Yes</b>, I understand. (<b>Sí</b>, entiendo.)"'},
+  {en:'no',es:'no',ph:'/noʊ/',cat:'Básico',ex:'"<b>No</b>, thank you. (<b>No</b>, gracias.)"'},
+  {en:'help',es:'ayuda',ph:'/hɛlp/',cat:'Básico',ex:'"I need <b>help</b>! (¡Necesito <b>ayuda</b>!)"'},
+  {en:'water',es:'agua',ph:'/ˈwɔːtər/',cat:'Comida',ex:'"Can I have some <b>water</b>? (¿Me da <b>agua</b>?)"'},
+  {en:'food',es:'comida',ph:'/fuːd/',cat:'Comida',ex:'"The <b>food</b> is delicious! (¡La <b>comida</b> está deliciosa!)"'},
+  {en:'coffee',es:'café',ph:'/ˈkɒfi/',cat:'Comida',ex:'"I would like a <b>coffee</b>. (Quisiera un <b>café</b>.)"'},
+  {en:'house',es:'casa',ph:'/haʊs/',cat:'Hogar',ex:'"I live in a big <b>house</b>. (Vivo en una <b>casa</b> grande.)"'},
+  {en:'dog',es:'perro',ph:'/dɒɡ/',cat:'Animales',ex:'"My <b>dog</b> is friendly. (Mi <b>perro</b> es amigable.)"'},
+  {en:'cat',es:'gato',ph:'/kæt/',cat:'Animales',ex:'"The <b>cat</b> is sleeping. (El <b>gato</b> está durmiendo.)"'},
+  {en:'happy',es:'feliz',ph:'/ˈhæpi/',cat:'Emociones',ex:'"I am very <b>happy</b>! (¡Estoy muy <b>feliz</b>!)"'},
+  {en:'sad',es:'triste',ph:'/sæd/',cat:'Emociones',ex:'"Why are you <b>sad</b>? (¿Por qué estás <b>triste</b>?)"'},
+  {en:'love',es:'amor / amar',ph:'/lʌv/',cat:'Emociones',ex:'"I <b>love</b> this song. (Me <b>encanta</b> esta canción.)"'},
+  {en:'big',es:'grande',ph:'/bɪɡ/',cat:'Adjetivos',ex:'"This is a <b>big</b> city. (Esta es una ciudad <b>grande</b>.)"'},
+  {en:'small',es:'pequeño',ph:'/smɔːl/',cat:'Adjetivos',ex:'"I have a <b>small</b> dog. (Tengo un perro <b>pequeño</b>.)"'},
+  {en:'good',es:'bueno',ph:'/ɡʊd/',cat:'Adjetivos',ex:'"This is very <b>good</b>! (¡Esto está muy <b>bueno</b>!)"'},
+  {en:'bad',es:'malo',ph:'/bæd/',cat:'Adjetivos',ex:'"This is <b>bad</b>. (Esto es <b>malo</b>.)"'},
+  {en:'beautiful',es:'hermoso',ph:'/ˈbjuːtɪfəl/',cat:'Adjetivos',ex:'"The sunset is <b>beautiful</b>. (El atardecer es <b>hermoso</b>.)"'},
+  {en:'work',es:'trabajo',ph:'/wɜːrk/',cat:'Trabajo',ex:'"I <b>work</b> every day. (<b>Trabajo</b> todos los días.)"'},
+  {en:'money',es:'dinero',ph:'/ˈmʌni/',cat:'Compras',ex:'"How much <b>money</b>? (¿Cuánto <b>dinero</b>?)"'},
+  {en:'how much',es:'cuánto cuesta',ph:'/haʊ mʌtʃ/',cat:'Compras',ex:'"<b>How much</b> is this? (¿<b>Cuánto cuesta</b> esto?)"'},
+  {en:'expensive',es:'caro',ph:'/ɪkˈspɛnsɪv/',cat:'Compras',ex:'"That's too <b>expensive</b>! (¡Eso está muy <b>caro</b>!)"'},
+  {en:'time',es:'tiempo / hora',ph:'/taɪm/',cat:'Básico',ex:'"What <b>time</b> is it? (¿Qué hora es?)"'},
+  {en:'friend',es:'amigo',ph:'/frɛnd/',cat:'Personas',ex:'"She is my best <b>friend</b>. (Ella es mi mejor <b>amiga</b>.)"'},
+  {en:'family',es:'familia',ph:'/ˈfæməli/',cat:'Personas',ex:'"I love my <b>family</b>. (Amo a mi <b>familia</b>.)"'},
+  {en:'doctor',es:'médico',ph:'/ˈdɒktər/',cat:'Salud',ex:'"I need a <b>doctor</b>. (Necesito un <b>médico</b>.)"'},
+  {en:'hospital',es:'hospital',ph:'/ˈhɒspɪtl/',cat:'Salud',ex:'"Where is the <b>hospital</b>? (¿Dónde está el <b>hospital</b>?)"'},
+  {en:'car',es:'carro',ph:'/kɑːr/',cat:'Transporte',ex:'"I drive my <b>car</b>. (Manejo mi <b>carro</b>.)"'},
+  {en:'bus',es:'bus',ph:'/bʌs/',cat:'Transporte',ex:'"I take the <b>bus</b>. (Tomo el <b>bus</b>.)"'},
+  {en:'taxi',es:'taxi',ph:'/ˈtæksi/',cat:'Transporte',ex:'"I need a <b>taxi</b>. (Necesito un <b>taxi</b>.)"'},
+  {en:'hotel',es:'hotel',ph:'/hoʊˈtɛl/',cat:'Viajes',ex:'"I have a reservation at the <b>hotel</b>. (Tengo reservación en el <b>hotel</b>.)"'},
+  {en:'sun',es:'sol',ph:'/sʌn/',cat:'Clima',ex:'"The <b>sun</b> is bright. (El <b>sol</b> está brillante.)"'},
+  {en:'rain',es:'lluvia',ph:'/reɪn/',cat:'Clima',ex:'"It's going to <b>rain</b>. (Va a <b>llover</b>.)"'},
+  {en:'hot',es:'caluroso',ph:'/hɒt/',cat:'Clima',ex:'"It's very <b>hot</b> today. (Está muy <b>caluroso</b> hoy.)"'},
+  {en:'cold',es:'frío',ph:'/koʊld/',cat:'Clima',ex:'"I feel <b>cold</b>. (Tengo <b>frío</b>.)"'},
+  {en:'eat',es:'comer',ph:'/iːt/',cat:'Verbos',ex:'"I want to <b>eat</b> pizza. (Quiero <b>comer</b> pizza.)"'},
+  {en:'drink',es:'beber / tomar',ph:'/drɪŋk/',cat:'Verbos',ex:'"Would you like to <b>drink</b> something? (¿Quieres <b>tomar</b> algo?)"'},
+  {en:'go',es:'ir',ph:'/ɡoʊ/',cat:'Verbos',ex:'"Let's <b>go</b>! (¡<b>Vamos</b>!)"'},
+  {en:'understand',es:'entender',ph:'/ˌʌndərˈstænd/',cat:'Verbos',ex:'"I don't <b>understand</b>. (No <b>entiendo</b>.)"'},
+  {en:'speak',es:'hablar',ph:'/spiːk/',cat:'Verbos',ex:'"Can you <b>speak</b> slowly? (¿Puede <b>hablar</b> despacio?)"'},
+  {en:'where',es:'dónde',ph:'/wɛr/',cat:'Preguntas',ex:'"<b>Where</b> is the hotel? (¿<b>Dónde</b> está el hotel?)"'},
+  {en:'what',es:'qué',ph:'/wɒt/',cat:'Preguntas',ex:'"<b>What</b> time is it? (¿<b>Qué</b> hora es?)"'},
+  {en:'when',es:'cuándo',ph:'/wɛn/',cat:'Preguntas',ex:'"<b>When</b> does it open? (¿<b>Cuándo</b> abre?)"'},
+  {en:'who',es:'quién',ph:'/huː/',cat:'Preguntas',ex:'"<b>Who</b> is that? (¿<b>Quién</b> es ese?)"'},
+  {en:'how',es:'cómo',ph:'/haʊ/',cat:'Preguntas',ex:'"<b>How</b> are you? (¿<b>Cómo</b> estás?)"'},
+];
+var ES_MAP={hola:'hello',adios:'goodbye','buenos dias':'good morning','buenas tardes':'good afternoon','buenas noches':'good night','por favor':'please',gracias:'thank you','lo siento':'sorry',disculpe:'excuse me',si:'yes',agua:'water',comida:'food',cafe:'coffee',casa:'house',perro:'dog',gato:'cat',feliz:'happy',triste:'sad',amor:'love',grande:'big','pequeno':'small',bueno:'good',malo:'bad',hermoso:'beautiful',trabajo:'work',dinero:'money',caro:'expensive',tiempo:'time',amigo:'friend',familia:'family','medico':'doctor',hospital:'hospital',carro:'car',autobus:'bus',taxi:'taxi',hotel:'hotel',sol:'sun',lluvia:'rain','caliente':'hot','frio':'cold',comer:'eat',beber:'drink',ir:'go',entender:'understand',hablar:'speak',donde:'where',que:'what',cuando:'when',quien:'who',como:'how',ayuda:'help'};
+
+var dHistArr=[];
+function norm(s){return s.toLowerCase().trim().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+
+function dsearch(q){
+  q=norm(q);
+  if(!q){document.getElementById('dRes').style.display='none';return;}
+  var enQ=ES_MAP[q]||q;
+  var found=DICT.find(function(d){return norm(d.en)===enQ;})||
+            DICT.find(function(d){return norm(d.en)===q;})||
+            DICT.find(function(d){return norm(d.es)===q;})||
+            DICT.find(function(d){return norm(d.en).includes(q)||norm(d.es).includes(q);});
+  var r=document.getElementById('dRes');
+  r.style.display='block';
+  if(!found){
+    r.innerHTML='<div style="text-align:center;padding:16px;color:#7777aa;font-size:.8rem;">😕 No encontramos "<strong>'+q+'</strong>"<br><small>Prueba: happy · house · work · hola · casa...</small></div>';
+    return;
+  }
+  if(dHistArr.indexOf(found.en)<0){dHistArr.unshift(found.en);if(dHistArr.length>8)dHistArr.pop();updDH();}
+  r.innerHTML=
+    '<div style="font-size:1.4rem;font-weight:700;color:#a78bfa;margin-bottom:2px;">'+found.en+'</div>'+
+    '<div style="font-size:.75rem;color:#7777aa;margin-bottom:8px;">'+found.ph+'</div>'+
+    '<button onclick="speakW(''+found.en+'')" style="background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:5px 13px;font-size:.73rem;color:#a78bfa;cursor:pointer;margin-bottom:8px;">🔊 Escuchar</button>'+
+    ' <span style="background:#1e1e38;border-radius:6px;padding:2px 9px;font-size:.65rem;color:#9999cc;">'+found.cat+'</span>'+
+    '<div style="font-size:.95rem;color:#e0e0f0;font-weight:600;margin:8px 0;">🇪🇸 '+found.es+'</div>'+
+    '<div style="font-size:.76rem;color:#9999bb;font-style:italic;line-height:1.7;">'+found.ex+'</div>';
+}
+
+function updDH(){
+  var h=document.getElementById('dHist');
+  if(!h)return;
+  if(dHistArr.length===0){h.style.display='none';return;}
+  h.style.display='block';
+  document.getElementById('dChips').innerHTML=dHistArr.map(function(w){
+    return '<span onclick="document.getElementById('dsIn').value=''+w+'';dsearch(''+w+'')" style="background:#1e1e38;border:1px solid #2a2a4a;border-radius:13px;padding:4px 11px;font-size:.71rem;color:#9999cc;cursor:pointer;">'+w+'</span>';
+  }).join('');
+}
+
+function openDict(){
+  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
+  document.getElementById('dictChip').classList.add('active');
+  document.getElementById('msgs').style.display='none';
+  document.getElementById('mainBottom').style.display='none';
+  document.getElementById('dictPanel').style.display='flex';
+  setTimeout(function(){var i=document.getElementById('dsIn');if(i)i.focus();},200);
+}
+
+function closeDict(){
+  document.getElementById('dictPanel').style.display='none';
+  document.getElementById('msgs').style.display='flex';
+  document.getElementById('mainBottom').style.display='block';
+  document.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('active');});
+  document.querySelectorAll('.tchip')[0].classList.add('active');
 }
 </script>
 </body>
