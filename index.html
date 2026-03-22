@@ -2,485 +2,1110 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Habla con Alex</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Tutor IA</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a14;color:#e8e8f0;height:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:fixed;width:100%;top:0;left:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f0f1a;color:#e8e8f0;min-height:100vh;display:flex;flex-direction:column;}
+header{background:linear-gradient(135deg,#1a1a2e,#16213e);border-bottom:1px solid #2a2a4a;padding:11px 15px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:99;}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#6c63ff,#a855f7);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.hd h1{font-size:.95rem;color:#fff;}.hd p{font-size:.65rem;color:#8888aa;}
+.lvl{margin-left:auto;background:#1e1e3a;border:1px solid #6c63ff44;border-radius:20px;padding:4px 11px;font-size:.66rem;color:#a0a0cc;white-space:nowrap;}
+.xpbar{background:#1a1a2e;border-bottom:1px solid #2a2a4a;padding:5px 15px;display:flex;align-items:center;gap:9px;font-size:.67rem;color:#8888aa;}
+.xptrack{flex:1;height:5px;background:#2a2a4a;border-radius:3px;overflow:hidden;}
+.xpfill{height:100%;background:linear-gradient(90deg,#6c63ff,#a855f7);border-radius:3px;transition:width .6s;width:0%;}
+.tabs{display:flex;background:#1a1a2e;border-bottom:1px solid #2a2a4a;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:9px 13px;font-size:.73rem;color:#8888aa;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
+.tab.active{color:#a78bfa;border-bottom-color:#a78bfa;}
+main{flex:1;padding:13px;max-width:700px;margin:0 auto;width:100%;}
+.view{display:none;flex-direction:column;gap:11px;}
+.view.active{display:flex;}
+.card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;padding:15px;}
+.welcome{background:linear-gradient(135deg,#1a1a3e,#16213e);border:1px solid #6c63ff33;border-radius:13px;padding:16px;}
+.welcome h2{font-size:1rem;margin-bottom:6px;}.welcome p{color:#9999bb;font-size:.8rem;line-height:1.6;}
+.tip{background:#1a1a2e;border-left:3px solid #a78bfa;border-radius:0 10px 10px 0;padding:8px 12px;font-size:.75rem;color:#9999bb;line-height:1.6;}
+.sec-title{font-size:.9rem;font-weight:600;color:#e0e0f0;margin-bottom:9px;}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.tcard{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:11px;padding:13px 9px;cursor:pointer;text-align:center;user-select:none;transition:border-color .2s;}
+.tcard:active{border-color:#6c63ff88;background:#1e1e38;}
+.tcard .ic{font-size:1.6rem;margin-bottom:5px;}.tcard h3{font-size:.77rem;color:#ccccee;margin-bottom:2px;}.tcard p{font-size:.65rem;color:#7777aa;}
+.key-input{background:#13131f;border:2px solid #6c63ff;border-radius:10px;padding:11px 13px;color:#e8e8f0;font-size:.87rem;outline:none;font-family:inherit;width:100%;}
+.btn-primary{background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:10px;padding:12px;color:#fff;font-size:.88rem;cursor:pointer;font-weight:600;width:100%;}
+.btn-sm{background:#1e1e38;border:1px solid #2a2a4a;border-radius:9px;padding:6px 13px;font-size:.73rem;color:#9999cc;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
 
-/* HEADER */
-.top{background:#111122;border-bottom:1px solid #1e1e3a;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.alex-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;}
-.alex-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;background:#4ade80;border-radius:50%;border:2px solid #111122;}
-.alex-av.speaking::after{background:#a855f7;animation:pulse .6s infinite;}
-.alex-av.listening::after{background:#ef4444;animation:pulse .5s infinite;}
-@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
-.top-info h2{font-size:.95rem;color:#fff;}
-.top-info p{font-size:.7rem;color:#8888aa;}
-.top-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.voice-sw{display:flex;align-items:center;gap:5px;font-size:.68rem;color:#7777aa;}
-.sw{position:relative;width:32px;height:17px;cursor:pointer;}
+/* STREAK & STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat-box{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:11px;padding:11px 8px;text-align:center;}
+.stat-box .num{font-size:1.5rem;font-weight:700;color:#a78bfa;}.stat-box .lbl{font-size:.63rem;color:#7777aa;margin-top:2px;}
+.streak-fire{font-size:1.5rem;}
+
+/* FRASE DEL DÍA */
+.frase-card{background:linear-gradient(135deg,#1a1a3e,#16213e);border:1px solid #6c63ff33;border-radius:13px;padding:16px;}
+.frase-card .tag{font-size:.65rem;color:#a78bfa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.frase-en{font-size:1.1rem;font-weight:600;color:#e0e0f0;margin-bottom:4px;}
+.frase-es{font-size:.82rem;color:#9999bb;margin-bottom:10px;}
+.frase-btn{background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:6px 14px;font-size:.75rem;color:#a78bfa;cursor:pointer;}
+
+/* LECCIONES */
+.lesson-list{display:flex;flex-direction:column;gap:8px;}
+.lesson-item{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:11px;padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
+.lesson-item:active{border-color:#6c63ff66;}
+.lesson-item.done{border-color:#4ade8033;background:#0f1a12;}
+.lesson-item.locked{opacity:.45;cursor:not-allowed;}
+.l-icon{width:38px;height:38px;border-radius:50%;background:#1e1e38;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.lesson-item.done .l-icon{background:#14532d;}
+.l-info h4{font-size:.82rem;color:#e0e0f0;margin-bottom:2px;}
+.l-info p{font-size:.68rem;color:#7777aa;}
+.l-badge{margin-left:auto;font-size:.65rem;padding:3px 9px;border-radius:10px;flex-shrink:0;}
+.l-badge.done{background:#14532d;color:#4ade80;}
+.l-badge.new{background:#1e1e38;color:#a78bfa;border:1px solid #6c63ff44;}
+.l-badge.lock{background:#1e1e38;color:#555577;}
+
+/* CHAT */
+.vchat-wrap{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 290px);min-height:300px;}
+.vtop{background:#16162a;border-bottom:1px solid #2a2a4a;padding:9px 13px;display:flex;align-items:center;gap:9px;}
+.avt{width:38px;height:38px;background:linear-gradient(135deg,#6c63ff,#a855f7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.avt.speaking{animation:ringS .9s infinite;}.avt.listening{animation:ringL 1.2s infinite;}
+@keyframes ringL{0%{box-shadow:0 0 0 0 #6c63ff88;}70%{box-shadow:0 0 0 12px #6c63ff00;}100%{box-shadow:0 0 0 0 #6c63ff00;}}
+@keyframes ringS{0%{box-shadow:0 0 0 0 #a855f788;}70%{box-shadow:0 0 0 10px #a855f700;}100%{box-shadow:0 0 0 0 #a855f700;}}
+.vtop h3{font-size:.83rem;}.vtop p{font-size:.65rem;color:#8888aa;}
+.spill{margin-left:auto;background:#1e1e38;border:1px solid #2a2a4a;border-radius:20px;padding:3px 9px;font-size:.64rem;color:#7777aa;display:flex;align-items:center;gap:4px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:#4ade80;flex-shrink:0;}
+.sdot.rec{background:#ef4444;animation:blink .8s infinite;}.sdot.spk{background:#a855f7;animation:blink .7s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sw-wrap{display:flex;align-items:center;gap:4px;margin-left:6px;}
+.sw-lbl{font-size:.6rem;color:#7777aa;}
+.sw{position:relative;width:28px;height:15px;cursor:pointer;flex-shrink:0;}
 .sw input{opacity:0;width:0;height:0;position:absolute;}
-.sw-track{position:absolute;inset:0;background:#2a2a4a;border-radius:9px;transition:.3s;}
+.sw-track{position:absolute;inset:0;background:#2a2a4a;border-radius:8px;transition:.3s;}
 .sw input:checked+.sw-track{background:#6c63ff;}
-.sw-thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:.3s;pointer-events:none;}
-.sw input:checked~.sw-thumb{left:17px;}
-.status-pill{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:20px;padding:4px 10px;font-size:.67rem;color:#7777aa;display:flex;align-items:center;gap:5px;}
-.sdot{width:6px;height:6px;border-radius:50%;background:#4ade80;}
-.sdot.talk{background:#a855f7;animation:pulse .7s infinite;}
-.sdot.listen{background:#ef4444;animation:pulse .6s infinite;}
-
-/* SETUP overlay */
-.setup{position:fixed;inset:0;background:#0a0a14;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;gap:16px;}
-.setup-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:4px;}
-.setup h1{font-size:1.4rem;color:#fff;text-align:center;}
-.setup p{font-size:.85rem;color:#9999bb;text-align:center;line-height:1.6;max-width:340px;}
-.setup-card{background:#111122;border:1px solid #2a2a4a;border-radius:16px;padding:20px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;}
-.setup-card label{font-size:.8rem;color:#ccccee;}
-.setup-card .steps{font-size:.75rem;color:#9999bb;line-height:1.8;}
-.key-in{background:#0a0a14;border:2px solid #6c63ff;border-radius:10px;padding:11px 14px;color:#e8e8f0;font-size:.88rem;outline:none;font-family:inherit;width:100%;}
-.key-in:focus{border-color:#a855f7;}
-.btn-start{background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:12px;padding:14px;color:#fff;font-size:1rem;cursor:pointer;font-weight:700;width:100%;letter-spacing:.02em;}
-.btn-start:active{opacity:.85;}
-.privacy{font-size:.7rem;color:#555577;text-align:center;}
-
-/* TOPIC SELECTOR */
-.topic-sel{background:#111122;border-top:1px solid #1e1e3a;padding:7px 12px;flex-shrink:0;}
-.topic-sel p{font-size:.68rem;color:#7777aa;margin-bottom:5px;text-align:center;}
-.topics{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
-.topics::-webkit-scrollbar{display:none;}
-.topic-chip{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:20px;padding:6px 14px;font-size:.73rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;}
-.topic-chip.active{background:#252548;border-color:#6c63ff;color:#a78bfa;}
-.topic-chip:active{border-color:#6c63ff88;}
-
-/* MESSAGES */
-.msgs{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:14px;}
-.msgs::-webkit-scrollbar{width:3px;}
-.msgs::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:2px;}
-
-.msg{display:flex;gap:10px;max-width:88%;}
+.sw-thumb{position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%;transition:.3s;pointer-events:none;}
+.sw input:checked~.sw-thumb{left:15px;}
+.msgs{flex:1;overflow-y:auto;padding:11px;display:flex;flex-direction:column;gap:10px;}
+.msg{display:flex;gap:7px;max-width:92%;}
 .msg.u{align-self:flex-end;flex-direction:row-reverse;}
-.mav{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
-.msg.u .mav{background:#252548;}
-
-.mbub{border-radius:16px;padding:10px 14px;font-size:.86rem;line-height:1.7;position:relative;}
-.msg:not(.u) .mbub{background:#111122;border:1px solid #1e1e3a;border-top-left-radius:4px;}
-.msg.u .mbub{background:linear-gradient(135deg,#3a3080,#5a4abb);border:none;border-top-right-radius:4px;color:#fff;}
-
-/* Bilingual styling */
-.en{color:#e8e8f0;font-weight:500;}
-.es-line{color:#8888bb;font-size:.8rem;margin-top:3px;font-style:italic;}
-.word-tip{display:inline-block;background:#1e1e38;border:1px solid #6c63ff33;border-radius:6px;padding:2px 8px;margin-top:5px;font-size:.73rem;color:#a78bfa;}
-
-/* Typing */
-.typing-wrap{display:flex;gap:10px;max-width:88%;}
-.typing-bub{background:#111122;border:1px solid #1e1e3a;border-radius:16px;border-top-left-radius:4px;padding:10px 14px;}
-.typing{display:flex;gap:5px;align-items:center;}
-.typing span{width:7px;height:7px;background:#6c63ff;border-radius:50%;animation:tb 1.2s infinite;}
+.mav{width:25px;height:25px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;}
+.msg.u .mav{background:#2a2a5a;}
+.mbub{background:#1e1e38;border:1px solid #2a2a4a;border-radius:11px;padding:8px 11px;font-size:.8rem;line-height:1.65;}
+.msg.u .mbub{background:linear-gradient(135deg,#4c3f9f,#6c63ff);border-color:#7c73ff;color:#fff;}
+.hi{color:#a78bfa;font-weight:600;}.es{color:#8888aa;font-style:italic;}
+.correction{background:#1a2a1a;border:1px solid #4ade8033;border-radius:8px;padding:6px 10px;margin-top:5px;font-size:.73rem;color:#86efac;}
+.typing{display:flex;gap:4px;align-items:center;padding:2px 0;}
+.typing span{width:6px;height:6px;background:#6c63ff;border-radius:50%;animation:tb 1.2s infinite;}
 .typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
-@keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+@keyframes tb{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-7px);}}
+.vfoot{border-top:1px solid #2a2a4a;padding:8px;}
+.tbox{background:#13131f;border:1px solid #2a2a4a;border-radius:8px;padding:6px 11px;font-size:.74rem;color:#9999cc;min-height:28px;font-style:italic;margin-bottom:6px;}
+.btn-row{display:flex;gap:6px;align-items:center;}
+.mic-big{width:50px;height:50px;border-radius:50%;border:2px solid #3a3a5a;cursor:pointer;background:#1e1e38;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.mic-big.on{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:#ef4444;animation:micP 1.2s infinite;}
+@keyframes micP{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+.tinput{flex:1;background:#13131f;border:1px solid #2a2a4a;border-radius:9px;padding:8px 11px;color:#e8e8f0;font-size:.8rem;outline:none;font-family:inherit;}
+.tinput:focus{border-color:#6c63ff66;}
+.sbtn{background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:14px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sbtn:disabled{opacity:.4;}
+.qbts{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.qbt{background:#1e1e38;border:1px solid #3a3a5a;border-radius:14px;padding:4px 10px;font-size:.68rem;color:#9999cc;cursor:pointer;}
+.qbt:active{border-color:#6c63ff;color:#a78bfa;}
 
-/* BOTTOM INPUT */
-.bottom{background:#111122;border-top:1px solid #1e1e3a;padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
-.input-row{display:flex;gap:8px;align-items:flex-end;}
-.mic-btn{width:48px;height:48px;border-radius:50%;border:2px solid #2a2a4a;cursor:pointer;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .25s;}
-.mic-btn.on{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:#ef4444;animation:micP 1s infinite;}
-@keyframes micP{0%,100%{box-shadow:0 0 0 0 #ef444444;}50%{box-shadow:0 0 0 8px #ef444400;}}
-.text-area-wrap{flex:1;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;}
-.text-area-wrap:focus-within{border-color:#6c63ff44;}
-textarea.msg-in{flex:1;background:none;border:none;outline:none;color:#e8e8f0;font-size:.85rem;font-family:inherit;resize:none;height:28px;max-height:80px;line-height:1.4;}
-textarea.msg-in::placeholder{color:#444466;}
-.send-btn{width:34px;height:34px;background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:50%;cursor:pointer;font-size:14px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.send-btn:disabled{opacity:.3;cursor:not-allowed;}
+/* VOCAB */
+.vc-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;padding:18px;text-align:center;}
+.vc-word{font-size:1.8rem;font-weight:700;color:#a78bfa;margin-bottom:3px;}
+.vc-phon{font-size:.78rem;color:#7777aa;margin-bottom:4px;}
+.vc-cat{font-size:.67rem;color:#6c63ff;background:#1e1e38;border-radius:9px;padding:2px 9px;display:inline-block;margin-bottom:11px;}
+.vc-meaning{font-size:.97rem;color:#e0e0f0;margin-bottom:6px;font-weight:600;}
+.vc-ex{font-size:.77rem;color:#9999bb;font-style:italic;padding:8px 11px;background:#13131f;border-radius:8px;line-height:1.65;margin-bottom:13px;}
+.vc-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.vc-btn{padding:8px 14px;border-radius:9px;border:none;font-size:.78rem;cursor:pointer;font-family:inherit;}
+.vc-btn.know{background:#14532d;color:#4ade80;}.vc-btn.dunno{background:#450a0a;color:#f87171;}.vc-btn.hear{background:#1e1e38;border:1px solid #6c63ff44;color:#a78bfa;}
+.vc-prog{text-align:center;font-size:.71rem;color:#7777aa;margin-bottom:7px;}
+.vc-stats{display:flex;gap:7px;justify-content:center;font-size:.7rem;margin-bottom:9px;}
+.vc-stat{background:#1e1e38;border-radius:7px;padding:3px 10px;color:#9999cc;}
+.vc-stat span{color:#a78bfa;font-weight:600;}
 
-/* Transcript bar */
-.transcript{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:6px 12px;font-size:.75rem;color:#8888aa;font-style:italic;margin-bottom:6px;min-height:28px;display:none;}
-.transcript.show{display:block;}
+/* EJERCICIOS */
+.ex-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;padding:15px;margin-bottom:11px;}
+.ex-label{font-size:.67rem;color:#7777aa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.ex-q{font-size:.9rem;color:#e0e0f0;margin-bottom:12px;line-height:1.5;}
+.opts{display:flex;flex-direction:column;gap:6px;}
+.opt{background:#13131f;border:1px solid #2a2a4a;border-radius:9px;padding:9px 12px;color:#cccce0;cursor:pointer;font-size:.79rem;text-align:left;font-family:inherit;}
+.opt.correct{border-color:#4ade80;background:#0f2a1a;color:#4ade80;}.opt.wrong{border-color:#f87171;background:#2a0f0f;color:#f87171;}.opt:disabled{cursor:default;}
+.feedback{margin-top:8px;padding:8px 11px;border-radius:9px;font-size:.77rem;line-height:1.5;display:none;}
+.feedback.show{display:block;}.feedback.ok{background:#0f2a1a;border:1px solid #4ade8044;color:#86efac;}.feedback.bad{background:#2a0f0f;border:1px solid #f8717144;color:#fca5a5;}
+.fill-wrap{display:flex;align-items:center;flex-wrap:wrap;gap:4px;font-size:.86rem;color:#e0e0f0;margin-bottom:11px;}
+.fill-in{background:#13131f;border:1px solid #2a2a4a;border-radius:7px;padding:5px 9px;color:#e8e8f0;font-size:.84rem;outline:none;width:110px;font-family:inherit;}
+.fill-in:focus{border-color:#6c63ff66;}
+.check-btn{background:#1e1e38;border:1px solid #6c63ff44;border-radius:9px;padding:7px 15px;color:#a78bfa;font-size:.78rem;cursor:pointer;font-family:inherit;}
+.next-btn{margin-top:9px;background:linear-gradient(135deg,#6c63ff,#a855f7);border:none;border-radius:9px;padding:8px 17px;color:#fff;font-size:.78rem;cursor:pointer;display:none;font-family:inherit;}
+.next-btn.show{display:inline-block;}
+.ex-score{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:9px;padding:8px 12px;font-size:.76rem;color:#9999bb;margin-bottom:11px;display:flex;justify-content:space-between;}
+.ex-score span{color:#a78bfa;font-weight:600;}
 
-/* Quick replies */
-.quick-replies{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 0 2px;margin-bottom:3px;}
-.quick-replies::-webkit-scrollbar{display:none;}
-.qr{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:5px 12px;font-size:.71rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.qr:active{border-color:#6c63ff;color:#a78bfa;}
+/* DICTADO */
+.dict-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;padding:16px;text-align:center;}
+.dict-phrase{font-size:1.1rem;color:#a78bfa;font-weight:600;margin:12px 0 6px;min-height:30px;}
+.dict-hint{font-size:.75rem;color:#7777aa;margin-bottom:12px;}
+.dict-input{background:#13131f;border:2px solid #2a2a4a;border-radius:9px;padding:10px 13px;color:#e8e8f0;font-size:.88rem;outline:none;font-family:inherit;width:100%;margin-bottom:10px;text-align:center;}
+.dict-input:focus{border-color:#6c63ff66;}
+.dict-result{padding:10px;border-radius:9px;font-size:.8rem;display:none;margin-bottom:10px;}
+.dict-result.ok{background:#0f2a1a;border:1px solid #4ade8044;color:#86efac;display:block;}
+.dict-result.bad{background:#2a0f0f;border:1px solid #f8717144;color:#fca5a5;display:block;}
+
+/* JUEGOS */
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.game-btn{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:11px;padding:14px 10px;cursor:pointer;text-align:center;user-select:none;}
+.game-btn:active{border-color:#6c63ff88;background:#1e1e38;}
+.game-btn .g-ic{font-size:1.8rem;margin-bottom:6px;}
+.game-btn h3{font-size:.8rem;color:#ccccee;margin-bottom:2px;}
+.game-btn p{font-size:.66rem;color:#7777aa;}
+/* Match game */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.match-col{display:flex;flex-direction:column;gap:7px;}
+.match-item{background:#13131f;border:1px solid #2a2a4a;border-radius:9px;padding:9px 11px;font-size:.8rem;cursor:pointer;text-align:center;user-select:none;transition:all .2s;}
+.match-item.selected{border-color:#6c63ff;background:#1e1e38;color:#a78bfa;}
+.match-item.correct{border-color:#4ade80;background:#0f2a1a;color:#4ade80;cursor:default;}
+.match-item.wrong{border-color:#f87171;background:#2a0f0f;color:#f87171;}
+/* Word order game */
+.word-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:44px;padding:8px;background:#13131f;border:1px solid #2a2a4a;border-radius:9px;margin-bottom:9px;}
+.word-chip{background:#1e1e38;border:1px solid #3a3a5a;border-radius:7px;padding:5px 11px;font-size:.8rem;color:#cccce0;cursor:pointer;user-select:none;}
+.word-chip:active{border-color:#6c63ff;background:#252548;}
+.word-chip.used{opacity:.3;cursor:default;}
+.word-answer{display:flex;flex-wrap:wrap;gap:7px;min-height:44px;padding:8px;background:#1a1a2e;border:2px dashed #2a2a4a;border-radius:9px;margin-bottom:9px;}
+.word-chip.placed{background:#252548;border-color:#6c63ff44;color:#a78bfa;cursor:pointer;}
+
+/* DICCIONARIO */
+.dict-search-wrap{position:relative;margin-bottom:10px;}
+.dict-search{width:100%;background:#13131f;border:2px solid #6c63ff;border-radius:12px;padding:12px 44px 12px 14px;color:#e8e8f0;font-size:.88rem;outline:none;font-family:inherit;}
+.dict-search:focus{border-color:#a855f7;}
+.dict-search-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;color:#6c63ff;}
+.dict-result{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:14px;display:none;}
+.dict-result.show{display:block;}
+.dict-word{font-size:1.5rem;font-weight:700;color:#a78bfa;margin-bottom:2px;}
+.dict-phon{font-size:.78rem;color:#7777aa;margin-bottom:8px;}
+.dict-trans{font-size:1rem;color:#e0e0f0;margin-bottom:10px;font-weight:600;}
+.dict-examples{font-size:.78rem;color:#9999bb;line-height:1.8;font-style:italic;}
+.dict-examples strong{color:#a78bfa;font-style:normal;}
+.dict-hear{background:#1e1e38;border:1px solid #6c63ff44;border-radius:8px;padding:5px 14px;font-size:.76rem;color:#a78bfa;cursor:pointer;margin-bottom:10px;display:inline-block;}
+.dict-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.dict-cat{background:#1e1e38;border-radius:6px;padding:2px 9px;font-size:.68rem;color:#9999cc;}
+.dict-not-found{text-align:center;padding:20px;color:#7777aa;font-size:.82rem;}
+.dict-history{margin-top:12px;}
+.dict-history-title{font-size:.72rem;color:#7777aa;margin-bottom:7px;}
+.dict-history-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.dict-chip{background:#1e1e38;border:1px solid #2a2a4a;border-radius:14px;padding:4px 11px;font-size:.72rem;color:#9999cc;cursor:pointer;}
+.dict-chip:active{border-color:#6c63ff;color:#a78bfa;}
+
+/* VISUAL VOCAB */
+.visual-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px;}
+.visual-cats::-webkit-scrollbar{display:none;}
+.vcat-btn{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:6px 13px;font-size:.72rem;color:#9999cc;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.vcat-btn.active{background:#252548;border-color:#6c63ff;color:#a78bfa;}
+.visual-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.vis-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.vis-card:active{border-color:#6c63ff66;}
+.vis-img{width:100%;height:100px;object-fit:cover;background:#13131f;display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+.vis-body{padding:10px;}
+.vis-en{font-size:.88rem;font-weight:600;color:#e0e0f0;}
+.vis-es{font-size:.76rem;color:#8888aa;margin-top:2px;}
+.vis-detail{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:16px;display:none;margin-bottom:12px;}
+.vis-detail.show{display:block;}
+.vis-detail-img{font-size:5rem;text-align:center;margin-bottom:10px;}
+.vis-detail-word{font-size:1.6rem;font-weight:700;color:#a78bfa;text-align:center;margin-bottom:4px;}
+.vis-detail-phon{font-size:.78rem;color:#7777aa;text-align:center;margin-bottom:8px;}
+.vis-detail-es{font-size:1rem;color:#e0e0f0;text-align:center;margin-bottom:12px;}
+.vis-detail-ex{font-size:.78rem;color:#9999bb;font-style:italic;background:#13131f;border-radius:8px;padding:9px;line-height:1.65;}
+.vis-detail-btns{display:flex;gap:8px;justify-content:center;margin-top:10px;}
+
+/* PROGRESO *//* PROGRESO */
+.prog-section{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:13px;padding:15px;}
+.prog-section h3{font-size:.83rem;color:#ccccee;margin-bottom:12px;}
+.prog-bar-wrap{margin-bottom:10px;}
+.prog-bar-lbl{display:flex;justify-content:space-between;font-size:.72rem;color:#8888aa;margin-bottom:4px;}
+.prog-bar{height:7px;background:#2a2a4a;border-radius:4px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,#6c63ff,#a855f7);border-radius:4px;transition:width .6s;}
+.err-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;}
+.err-item{background:#13131f;border-radius:8px;padding:8px 11px;font-size:.76rem;}
+.err-item .wrong-word{color:#f87171;}.err-item .right-word{color:#4ade80;}.err-item .arrow{color:#7777aa;margin:0 5px;}
 </style>
 </head>
 <body>
+<header>
+  <div class="logo">🎓</div>
+  <div class="hd"><h1>English Tutor IA</h1><p>Tu profesor personal con IA</p></div>
+  <div class="lvl" id="lvlBadge">⭐ Nivel Básico</div>
+</header>
+<div class="xpbar">
+  <span id="xpTxt">0 XP</span>
+  <div class="xptrack"><div class="xpfill" id="xpFill"></div></div>
+  <span id="xpNext">100 XP para subir</span>
+</div>
+<div class="tabs" id="tabBar" style="display:none;">
+  <div class="tab active" onclick="goTab('vHome',this)">🏠 Inicio</div>
+  <div class="tab" onclick="goTab('vLessons',this)">📖 Lecciones</div>
+  <div class="tab" onclick="goTab('vConv',this)">💬 Conversar</div>
+  <div class="tab" onclick="goTab('vDict',this)">🔍 Diccionario</div>
+  <div class="tab" onclick="goTab('vVisual',this)">🖼️ Visual</div>
+  <div class="tab" onclick="goTab('vVocab',this)">📚 Vocabulario</div>
+  <div class="tab" onclick="goTab('vExer',this)">✏️ Ejercicios</div>
+  <div class="tab" onclick="goTab('vGames',this)">🎮 Juegos</div>
+  <div class="tab" onclick="goTab('vProgress',this)">📊 Progreso</div>
+</div>
+<main>
 
 <!-- SETUP -->
-<div class="setup" id="setup">
-  <div class="setup-av">🤖</div>
-  <h1>Hola, soy Alex 👋</h1>
-  <p>Tu amigo bilingüe. Te hablo en inglés <strong>y</strong> español para que vayas aprendiendo poco a poco, como si hablaras con una persona real.</p>
-  <div class="setup-card">
-    <label>🔑 Para activarme necesitas una API Key de Groq (gratis)</label>
-    <div class="steps">1. Ve a <strong>console.groq.com</strong><br>2. Crea cuenta gratuita (sin tarjeta)<br>3. API Keys → Create API Key<br>4. Pega aquí 👇</div>
-    <input class="key-in" id="keyIn" type="text" placeholder="gsk_..."/>
-    <button class="btn-start" onclick="iniciar()">¡Empezar a hablar! 🚀</button>
+<div class="view active" id="vSetup">
+  <div class="welcome"><h2>🔑 Configuración — Groq (Gratis)</h2><p>Usa <strong>Groq</strong> — completamente gratis, sin tarjeta de crédito.</p></div>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+    <div style="font-size:.82rem;color:#ccccee;font-weight:600;">¿Cómo obtener tu API Key?</div>
+    <div style="font-size:.75rem;color:#9999bb;line-height:1.8;">1. Ve a <strong style="color:#a78bfa;">console.groq.com</strong><br>2. Crea cuenta gratuita (sin tarjeta)<br>3. <strong>API Keys → Create API Key</strong><br>4. Copia y pega aquí 👇</div>
+    <input class="key-input" id="keyInput" type="text" placeholder="gsk_..."/>
+    <button class="btn-primary" onclick="guardarKey()">✅ Guardar y empezar</button>
   </div>
-  <p class="privacy">🔒 Tu key se guarda solo en este navegador</p>
+  <div class="tip">🔒 La key se guarda solo en tu navegador.</div>
 </div>
 
-<!-- MAIN -->
-<div class="top">
-  <div class="alex-av" id="alexAv">🤖</div>
-  <div class="top-info">
-    <h2>Alex</h2>
-    <p id="topStatus">Tu amigo bilingüe · En línea</p>
+<!-- HOME -->
+<div class="view" id="vHome">
+  <!-- Frase del día -->
+  <div class="frase-card" id="fraseCard">
+    <div class="tag">💡 Frase del día</div>
+    <div class="frase-en" id="fraseEn">Loading...</div>
+    <div class="frase-es" id="fraseEs"></div>
+    <button class="frase-btn" onclick="speakWord(frases[fraseIdx].en)">🔊 Escuchar</button>
   </div>
-  <div class="top-right">
-    <div class="voice-sw">
-      <span>Voz</span>
-      <label class="sw"><input type="checkbox" id="ttsOn" checked><div class="sw-track"></div><div class="sw-thumb"></div></label>
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="num streak-fire" id="streakNum">0</div><div class="lbl">🔥 Racha</div></div>
+    <div class="stat-box"><div class="num" id="homeXP">0</div><div class="lbl">⭐ XP</div></div>
+    <div class="stat-box"><div class="num" id="homeWords">0</div><div class="lbl">📚 Palabras</div></div>
+    <div class="stat-box"><div class="num" id="homeExer">0</div><div class="lbl">✅ Ejercicios</div></div>
+  </div>
+  <!-- Temas -->
+  <div class="sec-title">Conversar sobre:</div>
+  <div class="grid2">
+    <div class="tcard" onclick="startChat('greetings')"><div class="ic">👋</div><h3>Saludos</h3><p>Hello, How are you...</p></div>
+    <div class="tcard" onclick="startChat('shopping')"><div class="ic">🛒</div><h3>Compras</h3><p>En tiendas y mercados</p></div>
+    <div class="tcard" onclick="startChat('restaurant')"><div class="ic">🍽️</div><h3>Restaurante</h3><p>Pedir comida y bebida</p></div>
+    <div class="tcard" onclick="startChat('directions')"><div class="ic">🗺️</div><h3>Direcciones</h3><p>Cómo preguntar rutas</p></div>
+    <div class="tcard" onclick="startChat('work')"><div class="ic">💼</div><h3>Trabajo</h3><p>Conversaciones de oficina</p></div>
+    <div class="tcard" onclick="startChat('travel')"><div class="ic">✈️</div><h3>Viajes</h3><p>Aeropuerto y hotel</p></div>
+    <div class="tcard" onclick="startChat('health')"><div class="ic">🏥</div><h3>Salud</h3><p>Médico y farmacia</p></div>
+    <div class="tcard" onclick="startChat('transport')"><div class="ic">🚌</div><h3>Transporte</h3><p>Bus, taxi, metro</p></div>
+    <div class="tcard" onclick="startChat('family')"><div class="ic">👨‍👩‍👧</div><h3>Familia</h3><p>Hablar de tu familia</p></div>
+    <div class="tcard" onclick="startChat('weather')"><div class="ic">⛅</div><h3>El tiempo</h3><p>Hablar del clima</p></div>
+  </div>
+  <button class="btn-sm" onclick="cambiarKey()">🔑 Cambiar API Key</button>
+</div>
+
+<!-- LECCIONES -->
+<div class="view" id="vLessons">
+  <div class="welcome"><h2>📖 Lecciones estructuradas</h2><p>Aprende paso a paso. Cada lección tiene un objetivo claro.</p></div>
+  <div class="lesson-list" id="lessonList"></div>
+</div>
+
+<!-- CONVERSAR -->
+<div class="view" id="vConv">
+  <button class="btn-sm" onclick="goTab('vHome',null)">← Cambiar tema</button>
+  <div style="background:#1a1a2e;border:1px solid #6c63ff33;border-radius:9px;padding:6px 11px;font-size:.72rem;color:#9999cc;display:flex;align-items:center;justify-content:space-between;">
+    <span id="vmTxt">🎙️ Toca el micrófono para hablar</span>
+    <div class="sw-wrap"><span class="sw-lbl">Voz</span><label class="sw"><input type="checkbox" id="ttsOn" checked><div class="sw-track"></div><div class="sw-thumb"></div></label></div>
+  </div>
+  <div class="vchat-wrap">
+    <div class="vtop">
+      <div class="avt" id="alexAvt">🤖</div>
+      <div><h3>Alex · Tutor IA</h3><p id="topicLbl">Saludos</p></div>
+      <div class="spill"><div class="sdot" id="sdot"></div><span id="stxt">Listo</span></div>
     </div>
-    <div class="status-pill"><div class="sdot" id="sdot"></div><span id="stxt">Listo</span></div>
-  </div>
-</div>
-
-<div class="topic-sel">
-  <p>¿De qué quieres hablar?</p>
-  <div class="topics" id="topicBar">
-    <div class="topic-chip active" onclick="setTopic(this,'free')">💬 Libre</div>
-    <div class="topic-chip" onclick="setTopic(this,'greetings')">👋 Saludos</div>
-    <div class="topic-chip" onclick="setTopic(this,'shopping')">🛒 Compras</div>
-    <div class="topic-chip" onclick="setTopic(this,'restaurant')">🍽️ Restaurante</div>
-    <div class="topic-chip" onclick="setTopic(this,'travel')">✈️ Viajes</div>
-    <div class="topic-chip" onclick="setTopic(this,'work')">💼 Trabajo</div>
-    <div class="topic-chip" onclick="setTopic(this,'family')">👨‍👩‍👧 Familia</div>
-    <div class="topic-chip" onclick="setTopic(this,'health')">🏥 Salud</div>
-    <div class="topic-chip" onclick="setTopic(this,'weather')">⛅ Clima</div>
-  </div>
-</div>
-
-<div class="msgs" id="msgs"></div>
-
-<div class="bottom">
-  <div class="transcript" id="transcript"></div>
-  <div class="quick-replies" id="quickR"></div>
-  <div class="input-row">
-    <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
-    <div class="text-area-wrap">
-      <textarea class="msg-in" id="msgIn" placeholder="Escribe en inglés, español, o mezcla los dos..." rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="send()">➤</button>
+    <div class="msgs" id="msgList"></div>
+    <div class="vfoot">
+      <div class="tbox" id="tbox">Toca 🎤 y habla en inglés...</div>
+      <div class="btn-row">
+        <button class="mic-big" id="micBtn" onclick="toggleMic()">🎤</button>
+        <input class="tinput" id="textIn" placeholder="O escribe aquí..." onkeydown="if(event.key==='Enter')enviar()"/>
+        <button class="sbtn" id="sbtn" onclick="enviar()">➤</button>
+      </div>
+      <div class="qbts" id="qbts"></div>
     </div>
   </div>
 </div>
 
+<!-- VOCABULARIO -->
+<div class="view" id="vVocab">
+  <div class="vc-stats">
+    <div class="vc-stat">✅ Aprendidas: <span id="vcKnow">0</span></div>
+    <div class="vc-stat">📚 Practicadas: <span id="vcDone">0</span></div>
+  </div>
+  <div class="vc-prog" id="vcProg">Tarjeta 1 de 30</div>
+  <div id="vcCard"></div>
+  <div class="tip">🔊 Escucha la pronunciación y repite en voz alta.</div>
+</div>
+
+<!-- EJERCICIOS -->
+<div class="view" id="vExer">
+  <div style="display:flex;gap:8px;margin-bottom:4px;">
+    <button class="btn-sm" onclick="exMode='normal';loadEx()" id="btnNormal" style="border-color:#6c63ff44;color:#a78bfa;">📝 Práctica</button>
+    <button class="btn-sm" onclick="exMode='dictado';loadDict()" id="btnDict">🎧 Dictado</button>
+  </div>
+  <div class="ex-score"><div>✅ Correctas: <span id="exC">0</span></div><div>📝 Total: <span id="exT">0</span></div></div>
+  <div id="exContainer"></div>
+</div>
+
+<!-- JUEGOS -->
+<div class="view" id="vGames">
+  <div class="welcome"><h2>🎮 Mini juegos</h2><p>Aprende jugando. ¡Cada juego te da XP!</p></div>
+  <div id="gameMenu">
+    <div class="game-grid">
+      <div class="game-btn" onclick="startMatch()"><div class="g-ic">🔗</div><h3>Emparejar</h3><p>Une palabra con traducción</p></div>
+      <div class="game-btn" onclick="startWordOrder()"><div class="g-ic">🔀</div><h3>Ordenar</h3><p>Forma la frase correcta</p></div>
+    </div>
+  </div>
+  <div id="gameArea" style="display:none;"></div>
+</div>
+
+<!-- DICCIONARIO -->
+<div class="view" id="vDict">
+  <div class="welcome" style="padding:14px;">
+    <h2>🔍 Diccionario Español–Inglés</h2>
+    <p>Busca cualquier palabra en español o inglés.</p>
+  </div>
+  <div class="dict-search-wrap">
+    <input class="dict-search" id="dictSearchIn" type="text" placeholder="Busca una palabra... ej: casa, dog, happy" oninput="dictSearch(this.value)" onkeydown="if(event.key==='Enter')dictSearch(this.value)"/>
+    <span class="dict-search-ico">🔍</span>
+  </div>
+  <div class="dict-result" id="dictResult"></div>
+  <div class="dict-history" id="dictHistory">
+    <div class="dict-history-title">🕐 Búsquedas recientes:</div>
+    <div class="dict-history-chips" id="dictChips"></div>
+  </div>
+</div>
+
+<!-- VOCABULARIO VISUAL -->
+<div class="view" id="vVisual">
+  <div class="welcome" style="padding:14px;">
+    <h2>🖼️ Vocabulario con imágenes</h2>
+    <p>Aprende palabras asociándolas con imágenes. ¡Toca una para ver más detalles!</p>
+  </div>
+  <div class="visual-cats" id="visualCats"></div>
+  <div class="vis-detail" id="visDetail"></div>
+  <div class="visual-grid" id="visualGrid"></div>
+</div>
+
+<!-- PROGRESO -->
+<div class="view" id="vProgress">
+  <div class="stats-row">
+    <div class="stat-box"><div class="num" id="pStreak">0</div><div class="lbl">🔥 Racha días</div></div>
+    <div class="stat-box"><div class="num" id="pXP">0</div><div class="lbl">⭐ XP total</div></div>
+    <div class="stat-box"><div class="num" id="pWords">0</div><div class="lbl">📚 Vocab</div></div>
+    <div class="stat-box"><div class="num" id="pExer">0</div><div class="lbl">✅ Ejercicios</div></div>
+  </div>
+  <div class="prog-section">
+    <h3>📊 Habilidades</h3>
+    <div class="prog-bar-wrap"><div class="prog-bar-lbl"><span>Vocabulario</span><span id="pVocPct">0%</span></div><div class="prog-bar"><div class="prog-bar-fill" id="pVocBar" style="width:0%"></div></div></div>
+    <div class="prog-bar-wrap"><div class="prog-bar-lbl"><span>Ejercicios</span><span id="pExPct">0%</span></div><div class="prog-bar"><div class="prog-bar-fill" id="pExBar" style="width:0%"></div></div></div>
+    <div class="prog-bar-wrap"><div class="prog-bar-lbl"><span>Conversación</span><span id="pConvPct">0%</span></div><div class="prog-bar"><div class="prog-bar-fill" id="pConvBar" style="width:0%"></div></div></div>
+  </div>
+  <div class="prog-section">
+    <h3>❌ Errores frecuentes</h3>
+    <div class="err-list" id="errList"><div style="font-size:.75rem;color:#7777aa;">Aún no hay errores registrados. ¡Practica ejercicios!</div></div>
+  </div>
+</div>
+
+</main>
 <script>
-var API_KEY='', curTopic='free', chatHistory=[];
+// ── STATE ──────────────────────────────────────
+var API_KEY='', xp=0, vcKnow=0, vcDone=0, exC=0, exT=0, convMsgs=0;
+var chatHistory=[], curTopic='';
 var isListening=false, isSpeaking=false;
 var recognition=null, synth=window.speechSynthesis||null, engVoice=null;
+var curVc=0, curEx=0, exMode='normal', curDict=0;
+var fraseIdx=0, streak=0, lastDay='', errors=[];
+var lessonsDone=[];
+var matchSelected=null;
 
-// ── VOICES ──────────────────────────────────
-function loadVoices(){
-  if(!synth)return;
-  var vs=synth.getVoices();
-  engVoice=vs.find(function(v){return v.lang==='en-US'&&/samantha|zira|susan|female/i.test(v.name);})||
-           vs.find(function(v){return v.lang==='en-US';})||
-           vs.find(function(v){return v.lang&&v.lang.startsWith('en');})||null;
+// ── SAVE/LOAD ──────────────────────────────────
+function saveState(){
+  try{localStorage.setItem('eti_state',JSON.stringify({xp:xp,vcKnow:vcKnow,vcDone:vcDone,exC:exC,exT:exT,convMsgs:convMsgs,streak:streak,lastDay:lastDay,errors:errors.slice(-20),lessonsDone:lessonsDone}));}catch(e){}
 }
-if(synth){loadVoices();if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=loadVoices;}
+function loadState(){
+  try{var s=localStorage.getItem('eti_state');if(s){var d=JSON.parse(s);xp=d.xp||0;vcKnow=d.vcKnow||0;vcDone=d.vcDone||0;exC=d.exC||0;exT=d.exT||0;convMsgs=d.convMsgs||0;streak=d.streak||0;lastDay=d.lastDay||'';errors=d.errors||[];lessonsDone=d.lessonsDone||[];}}catch(e){}
+}
+function checkStreak(){
+  var today=new Date().toDateString();
+  if(lastDay===today)return;
+  var yesterday=new Date(Date.now()-86400000).toDateString();
+  if(lastDay===yesterday){streak++;}else if(lastDay!==''){streak=1;}else{streak=1;}
+  lastDay=today;saveState();
+}
 
-function speakText(text){
+// ── VIEWS ──────────────────────────────────────
+function show(id){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function goTab(id,el){
+  show(id);
+  if(el){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');}
+  if(id==='vVocab')loadVc();
+  if(id==='vExer'){exMode='normal';loadEx();}
+  if(id==='vProgress')updateProgress();
+  if(id==='vLessons')renderLessons();
+  if(id==='vHome')updateHome();
+  if(id==='vGames'){document.getElementById('gameMenu').style.display='block';document.getElementById('gameArea').style.display='none';}
+  if(id==='vDict')initDict();
+  if(id==='vVisual')initVisual();
+}
+
+// ── KEY ────────────────────────────────────────
+function guardarKey(){
+  var v=document.getElementById('keyInput').value.trim();
+  if(!v){alert('Pega tu API Key primero.');return;}
+  API_KEY=v;
+  try{localStorage.setItem('eti_key',v);}catch(e){}
+  loadState();checkStreak();
+  document.getElementById('tabBar').style.display='flex';
+  document.querySelectorAll('.tab')[0].classList.add('active');
+  show('vHome');updateHome();updateXPBar();
+}
+function cambiarKey(){API_KEY='';try{localStorage.removeItem('eti_key');}catch(e){}document.getElementById('keyInput').value='';document.getElementById('tabBar').style.display='none';show('vSetup');}
+
+// ── XP ─────────────────────────────────────────
+function addXP(n){xp+=n;updateXPBar();updateHome();saveState();}
+function updateXPBar(){
+  var pct=xp%100,lvl=Math.floor(xp/100)+1;
+  document.getElementById('xpTxt').textContent=xp+' XP';
+  document.getElementById('xpFill').style.width=pct+'%';
+  document.getElementById('xpNext').textContent=(100-pct)+' XP para subir';
+  var bs=['⭐ Nivel Básico','🌟 Elemental','💫 Pre-Intermedio','✨ Intermedio','🔥 Avanzado'];
+  document.getElementById('lvlBadge').textContent=bs[Math.min(lvl-1,bs.length-1)];
+}
+function updateHome(){
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('homeXP').textContent=xp;
+  document.getElementById('homeWords').textContent=vcKnow;
+  document.getElementById('homeExer').textContent=exC;
+}
+
+// ── FRASE DEL DÍA ──────────────────────────────
+var frases=[
+  {en:'How are you?',es:'¿Cómo estás?'},{en:'Nice to meet you!',es:'¡Mucho gusto!'},{en:'Can you help me, please?',es:'¿Me puede ayudar, por favor?'},
+  {en:'How much does it cost?',es:'¿Cuánto cuesta?'},{en:'Where is the bathroom?',es:'¿Dónde está el baño?'},{en:'I don\'t understand.',es:'No entiendo.'},
+  {en:'Can you speak more slowly?',es:'¿Puede hablar más despacio?'},{en:'I would like a coffee, please.',es:'Quisiera un café, por favor.'},
+  {en:'What time is it?',es:'¿Qué hora es?'},{en:'I need help!',es:'¡Necesito ayuda!'},{en:'See you tomorrow!',es:'¡Hasta mañana!'},
+  {en:'The weather is beautiful today.',es:'El clima está hermoso hoy.'},{en:'I\'m from Mexico.',es:'Soy de México.'},
+  {en:'My name is...',es:'Me llamo...'},{en:'I\'m sorry, I\'m lost.',es:'Lo siento, estoy perdido.'},
+];
+function loadFrase(){
+  fraseIdx=Math.floor((Date.now()/86400000))%frases.length;
+  document.getElementById('fraseEn').textContent=frases[fraseIdx].en;
+  document.getElementById('fraseEs').textContent=frases[fraseIdx].es;
+}
+
+// ── VOICES ─────────────────────────────────────
+function loadVoices(){if(!synth)return;var vs=synth.getVoices();engVoice=vs.find(function(v){return v.lang==='en-US'&&/samantha|zira|susan|female/i.test(v.name);})||vs.find(function(v){return v.lang==='en-US';})||vs.find(function(v){return v.lang&&v.lang.startsWith('en');})||null;}
+if(synth){loadVoices();if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=loadVoices;}
+function speak(text){
   if(!document.getElementById('ttsOn').checked||!synth)return;
-  // Extract only English lines (not Spanish translations)
-  var lines=text.split('\n');
-  var enLines=lines.filter(function(l){
-    return l.trim()&&!l.trim().startsWith('🇪🇸')&&!l.trim().startsWith('💡')&&!l.trim().startsWith('//');
-  });
-  var clean=enLines.join(' ')
-    .replace(/\([^)]{0,120}\)/g,'')
-    .replace(/\*([^*]+)\*/g,'$1')
-    .replace(/<[^>]+>/g,'')
-    .replace(/[🎉✅❌💡🎤🇪🇸👋🛒🍽️✈️💼👨‍👩‍👧🏥⛅😊😄🙌]/g,'')
-    .replace(/\s+/g,' ').trim();
-  if(!clean)return;
-  synth.cancel();
-  var u=new SpeechSynthesisUtterance(clean);
-  u.lang='en-US';u.rate=0.84;u.pitch=1.05;
-  if(engVoice)u.voice=engVoice;
-  u.onstart=function(){isSpeaking=true;setStatus('speak');document.getElementById('alexAv').classList.add('speaking');};
-  u.onend=u.onerror=function(){isSpeaking=false;setStatus('idle');document.getElementById('alexAv').classList.remove('speaking');};
+  var clean=text.replace(/\([^)]{0,120}\)/g,'').replace(/\*([^*]+)\*/g,'$1').replace(/<[^>]+>/g,'').replace(/\n/g,' ').trim();
+  if(!clean)return;synth.cancel();
+  var u=new SpeechSynthesisUtterance(clean);u.lang='en-US';u.rate=0.82;u.pitch=1.05;if(engVoice)u.voice=engVoice;
+  u.onstart=function(){isSpeaking=true;setStatus('spk','🔊 Alex hablando...');document.getElementById('alexAvt').classList.add('speaking');};
+  u.onend=u.onerror=function(){isSpeaking=false;setStatus('','Listo');document.getElementById('alexAvt').classList.remove('speaking');};
   synth.speak(u);
 }
+function speakWord(w){if(!synth)return;synth.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=0.75;if(engVoice)u.voice=engVoice;synth.speak(u);}
 
-// ── MIC ─────────────────────────────────────
+// ── MIC ────────────────────────────────────────
 var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition||null;
 function toggleMic(){
-  if(!SpeechRec){alert('Usa Google Chrome para hablar por voz.');return;}
+  if(!SpeechRec){alert('Usa Google Chrome para el micrófono.');return;}
   if(isListening){recognition.stop();return;}
   if(isSpeaking&&synth)synth.cancel();
-  recognition=new SpeechRec();
-  recognition.lang='en-US';recognition.continuous=false;recognition.interimResults=true;
-  recognition.onstart=function(){
-    isListening=true;
-    document.getElementById('micBtn').classList.add('on');
-    document.getElementById('alexAv').classList.add('listening');
-    setStatus('listen');
-    showTranscript('🎤 Escuchando...');
-  };
-  recognition.onresult=function(e){
-    var f='',i='';
-    for(var x=e.resultIndex;x<e.results.length;x++){
-      if(e.results[x].isFinal)f+=e.results[x][0].transcript;
-      else i+=e.results[x][0].transcript;
+  recognition=new SpeechRec();recognition.lang='en-US';recognition.continuous=false;recognition.interimResults=true;
+  recognition.onstart=function(){isListening=true;document.getElementById('micBtn').classList.add('on');document.getElementById('alexAvt').classList.add('listening');setStatus('rec','🎤 Escuchando...');document.getElementById('tbox').textContent='...';};
+  recognition.onresult=function(e){var f='',i='';for(var x=e.resultIndex;x<e.results.length;x++){if(e.results[x].isFinal)f+=e.results[x][0].transcript;else i+=e.results[x][0].transcript;}document.getElementById('tbox').textContent=f||i||'...';if(f)document.getElementById('textIn').value=f;};
+  recognition.onend=function(){isListening=false;document.getElementById('micBtn').classList.remove('on');document.getElementById('alexAvt').classList.remove('listening');setStatus('','Listo');var t=document.getElementById('textIn').value.trim();if(t)enviar();else document.getElementById('tbox').textContent='No se detectó voz. Intenta de nuevo.';};
+  recognition.onerror=function(e){isListening=false;document.getElementById('micBtn').classList.remove('on');var m={'not-allowed':'⚠️ Permiso de micrófono denegado.','no-speech':'🔇 No se detectó voz.'};document.getElementById('tbox').textContent=m[e.error]||'Error: '+e.error;setStatus('','Listo');};
+  try{recognition.start();}catch(e){document.getElementById('tbox').textContent='Error al iniciar micrófono.';}
+}
+function setStatus(type,txt){
+  var d=document.getElementById('sdot');d.className='sdot'+(type==='rec'?' rec':type==='spk'?' spk':'');
+  document.getElementById('stxt').textContent=txt;
+  document.getElementById('vmTxt').textContent=type==='rec'?'🎤 Escuchando...':type==='spk'?'🔊 Alex hablando...':'🎙️ Toca el micrófono para hablar';
+}
+
+// ── TOPICS ─────────────────────────────────────
+var LABELS={greetings:'Saludos',shopping:'Compras',restaurant:'Restaurante',directions:'Direcciones',work:'Trabajo',travel:'Viajes',health:'Salud',transport:'Transporte',family:'Familia',weather:'El tiempo'};
+var SYSTEMS={
+  greetings:'Tema: Saludos en inglés. Enseña: Hello/Hi, Good morning/afternoon/evening, How are you?, Nice to meet you, What is your name?, See you later.',
+  shopping:'Tema: Compras. Simula ser el vendedor. Enseña: How much is it?, I\'ll take it, Do you have...?, Too expensive, Can I pay by card?, I\'m looking for...',
+  restaurant:'Tema: Restaurante. Simula ser el mesero. Enseña: Table for..., Can I have the menu?, I\'ll have..., The bill please, It\'s delicious, What do you recommend?',
+  directions:'Tema: Direcciones. Enseña: Where is...?, Turn left/right, Go straight, Is it far?, How long does it take?, It\'s next to...',
+  work:'Tema: Trabajo. Enseña: Good morning, I have a meeting, Can you help me?, I\'ll send an email, I agree/disagree, Could you repeat that?',
+  travel:'Tema: Viajes. Enseña: Here is my passport, Where is gate...?, I have a reservation, Do you have WiFi?, What time is check-out?, I need a taxi.',
+  health:'Tema: Salud. Enseña: I don\'t feel well, I have a headache/fever, Where is the hospital?, I need a doctor, Do you have this medicine?',
+  transport:'Tema: Transporte. Enseña: Where is the bus stop?, How much is the ticket?, Does this bus go to...?, What time is the next train?, One ticket please.',
+  family:'Tema: Familia. Enseña: I have a brother/sister, My mother/father is..., I am married/single, I have two children, How old is your...?',
+  weather:'Tema: Clima. Enseña: What\'s the weather like?, It\'s sunny/rainy/cold/hot, I need an umbrella, The weather is beautiful today.'
+};
+var BASE='Eres Alex, tutor de inglés para hispanohablantes principiantes (A1-A2).\n\nREGLAS OBLIGATORIAS:\n1. SIEMPRE formato bilingüe: inglés + traducción española entre paréntesis.\n   Ejemplo: "Hello! (¡Hola!) How are you? (¿Cómo estás?)"\n2. NUNCA respondas solo en inglés sin traducción.\n3. Explica vocabulario nuevo con ejemplos en español.\n4. Si el estudiante escribe en español, muéstrale cómo decirlo en inglés primero.\n5. Corrige errores amablemente con explicación en español.\n   Ejemplo: "¡Casi! Se dice \'I am\' no \'I is\'. \'Am\' se usa siempre con \'I\'. 😊"\n6. Respuestas cortas: máximo 4 líneas. Termina con una pregunta simple.\n7. Sé muy alentador y positivo.\n\nTEMA: ';
+var QUICK={greetings:['Hello!','Good morning!','How are you?','Nice to meet you!'],shopping:['How much is it?','I\'ll take it!','Too expensive!','Can I pay by card?'],restaurant:['Table for two, please.','Can I have the menu?','I\'ll have the chicken.','The bill, please.'],directions:['Where is the hotel?','Is it far?','Turn left?','Go straight?'],work:['Good morning!','Can you help me?','I have a meeting.','I agree!'],travel:['Here is my passport.','Where is gate 12?','I need a taxi.','Do you have WiFi?'],health:['I don\'t feel well.','I have a headache.','Where is the hospital?','I need a doctor.'],transport:['Where is the bus stop?','How much is the ticket?','Does this go to downtown?','One ticket please.'],family:['I have a brother.','My mother is a teacher.','I am married.','I have two children.'],weather:['What\'s the weather like?','It\'s sunny today!','It\'s very cold.','The weather is beautiful!']};
+
+function startChat(topic){
+  curTopic=topic;chatHistory=[];if(synth)synth.cancel();
+  document.getElementById('topicLbl').textContent=LABELS[topic]||topic;
+  document.getElementById('msgList').innerHTML='';document.getElementById('tbox').textContent='Toca 🎤 para hablar — toca de nuevo para enviar';document.getElementById('textIn').value='';
+  setQuick(QUICK[topic]||[]);
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.tab')[2].classList.add('active');
+  show('vConv');
+  var sys=BASE+(SYSTEMS[topic]||'');chatHistory.push({role:'system',content:sys});
+  addTyping();
+  llamarAI([{role:'user',content:'Empieza la lección. Salúdame como Alex, menciona el tema y hazme una pregunta simple. Máximo 3 líneas, bilingüe.'}],sys)
+    .then(function(r){removeTyping();addBot(r);chatHistory.push({role:'assistant',content:r});speak(r);})
+    .catch(function(e){removeTyping();addBot('⚠️ Error: '+e.message);});
+}
+
+// ── CHAT ───────────────────────────────────────
+function fmt(t){t=t.replace(/\*([^*]+)\*/g,'<span class="hi">$1</span>');t=t.replace(/\(([^)]{1,120})\)/g,'<span class="es">($1)</span>');t=t.replace(/\n/g,'<br>');return t;}
+function addBot(text){var c=document.getElementById('msgList');var d=document.createElement('div');d.className='msg';var av=document.createElement('div');av.className='mav';av.textContent='🤖';var b=document.createElement('div');b.className='mbub';b.innerHTML=fmt(text);d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function addUser(text){var c=document.getElementById('msgList');var d=document.createElement('div');d.className='msg u';var av=document.createElement('div');av.className='mav';av.textContent='👤';var b=document.createElement('div');b.className='mbub';b.textContent=text;d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function addTyping(){var c=document.getElementById('msgList');var d=document.createElement('div');d.className='msg';d.id='typr';var av=document.createElement('div');av.className='mav';av.textContent='🤖';var b=document.createElement('div');b.className='mbub';b.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function removeTyping(){var e=document.getElementById('typr');if(e)e.remove();}
+function setQuick(arr){var q=document.getElementById('qbts');q.innerHTML=arr.map(function(s){var sf=s.replace(/'/g,"\\'");return '<button class="qbt" onclick="document.getElementById(\'textIn\').value=\''+sf+'\';enviar()">'+s+'</button>';}).join('');}
+
+function enviar(){
+  var inp=document.getElementById('textIn');var text=inp.value.trim();if(!text)return;
+  inp.value='';document.getElementById('tbox').textContent='Toca 🎤 para hablar — toca de nuevo para enviar';
+  if(isSpeaking&&synth)synth.cancel();
+  addUser(text);addXP(5);convMsgs++;
+  chatHistory.push({role:'user',content:text});
+  document.getElementById('sbtn').disabled=true;addTyping();
+  var sys=chatHistory[0]&&chatHistory[0].role==='system'?chatHistory[0].content:BASE;
+  var ms=chatHistory.filter(function(m){return m.role!=='system';});
+  llamarAI(ms,sys)
+    .then(function(r){removeTyping();addBot(r);chatHistory.push({role:'assistant',content:r});speak(r);document.getElementById('sbtn').disabled=false;saveState();})
+    .catch(function(e){removeTyping();addBot('⚠️ Error: '+(e.message||'desconocido'));document.getElementById('sbtn').disabled=false;});
+}
+
+async function llamarAI(messages,system){
+  if(!API_KEY)throw new Error('Sin API Key.');
+  var ms=[{role:'system',content:system}].concat(messages);
+  var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:ms,max_tokens:800,temperature:0.8})});
+  if(!res.ok){var err=await res.json().catch(function(){return{};});throw new Error((err.error&&err.error.message)||'HTTP '+res.status);}
+  var data=await res.json();return data.choices[0].message.content;
+}
+
+// ── LECCIONES ──────────────────────────────────
+var LESSONS=[
+  {id:'l1',icon:'👋',title:'Lección 1: Presentarte',desc:'My name is..., I\'m from..., Nice to meet you!',xp:20},
+  {id:'l2',icon:'🔢',title:'Lección 2: Números y edades',desc:'How old are you?, I\'m 25 years old, Numbers 1-100',xp:20},
+  {id:'l3',icon:'🎨',title:'Lección 3: Colores y objetos',desc:'What color is it?, It\'s red/blue/green',xp:20},
+  {id:'l4',icon:'🕐',title:'Lección 4: La hora',desc:'What time is it?, It\'s 3 o\'clock, At 5pm',xp:20},
+  {id:'l5',icon:'🍎',title:'Lección 5: Comida y bebida',desc:'I like..., I don\'t like..., Food vocabulary',xp:20},
+  {id:'l6',icon:'🏠',title:'Lección 6: La casa',desc:'Living room, bedroom, kitchen, bathroom',xp:25},
+  {id:'l7',icon:'📅',title:'Lección 7: Días y meses',desc:'Days of the week, months, seasons',xp:25},
+  {id:'l8',icon:'💪',title:'Lección 8: Rutina diaria',desc:'I wake up at 7am, I go to work, I eat lunch',xp:25},
+];
+
+function renderLessons(){
+  var html='';
+  LESSONS.forEach(function(l,i){
+    var done=lessonsDone.indexOf(l.id)>=0;
+    var locked=i>0&&lessonsDone.indexOf(LESSONS[i-1].id)<0;
+    var cls='lesson-item'+(done?' done':locked?' locked':'');
+    var badge=done?'<span class="l-badge done">✅ Completada</span>':locked?'<span class="l-badge lock">🔒 Bloqueada</span>':'<span class="l-badge new">▶ Iniciar</span>';
+    var click=locked?'':' onclick="startLesson(\''+l.id+'\')"';
+    html+='<div class="'+cls+'"'+click+'><div class="l-icon">'+l.icon+'</div><div class="l-info"><h4>'+l.title+'</h4><p>'+l.desc+'</p></div>'+badge+'</div>';
+  });
+  document.getElementById('lessonList').innerHTML=html;
+}
+
+function startLesson(id){
+  var l=LESSONS.find(function(x){return x.id===id;});
+  if(!l)return;
+  var topic='Lección: '+l.title+'. '+l.desc;
+  curTopic=id;chatHistory=[];if(synth)synth.cancel();
+  document.getElementById('topicLbl').textContent=l.title;
+  document.getElementById('msgList').innerHTML='';document.getElementById('tbox').textContent='Toca 🎤 para hablar — toca de nuevo para enviar';document.getElementById('textIn').value='';
+  setQuick([]);
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.tab')[2].classList.add('active');
+  show('vConv');
+  var sys=BASE+'Esta es una lección estructurada. '+topic+'\nGuía al estudiante paso a paso. Al terminar la lección dile que lo hizo excelente.';
+  chatHistory.push({role:'system',content:sys});
+  addTyping();
+  llamarAI([{role:'user',content:'Empieza la lección paso a paso. Salúdame y explica qué aprenderemos. Muy simple y bilingüe.'}],sys)
+    .then(function(r){
+      removeTyping();addBot(r);chatHistory.push({role:'assistant',content:r});speak(r);
+      if(lessonsDone.indexOf(id)<0){lessonsDone.push(id);addXP(l.xp);saveState();}
+    })
+    .catch(function(e){removeTyping();addBot('⚠️ Error: '+e.message);});
+}
+
+// ── VOCABULARY ─────────────────────────────────
+var VOCAB=[
+  {w:'Hello / Hi',p:'/həˈloʊ/ /haɪ/',cat:'Saludos',m:'Hola',ex:'"Hello! My name is Ana. (¡Hola! Me llamo Ana.)"'},
+  {w:'Thank you',p:'/θæŋk juː/',cat:'Cortesía',m:'Gracias',ex:'"Thank you very much! (¡Muchas gracias!)"'},
+  {w:'Please',p:'/pliːz/',cat:'Cortesía',m:'Por favor',ex:'"Water, please. (Agua, por favor.)"'},
+  {w:'Sorry',p:'/ˈsɒri/',cat:'Cortesía',m:'Lo siento / Perdón',ex:'"Sorry, I don\'t understand. (Lo siento, no entiendo.)"'},
+  {w:'Excuse me',p:'/ɪkˈskjuːz miː/',cat:'Cortesía',m:'Disculpe / Con permiso',ex:'"Excuse me, where is the bathroom? (Disculpe, ¿dónde está el baño?)"'},
+  {w:'Where is...?',p:'/wɛr ɪz/',cat:'Direcciones',m:'¿Dónde está...?',ex:'"Where is the hotel? (¿Dónde está el hotel?)"'},
+  {w:'How much?',p:'/haʊ mʌtʃ/',cat:'Compras',m:'¿Cuánto cuesta?',ex:'"How much is this? (¿Cuánto cuesta esto?)"'},
+  {w:'I need...',p:'/aɪ niːd/',cat:'Básico',m:'Necesito...',ex:'"I need a taxi. (Necesito un taxi.)"'},
+  {w:'I don\'t understand',p:'/aɪ doʊnt ʌndərˈstænd/',cat:'Básico',m:'No entiendo',ex:'"I don\'t understand. Can you repeat? (No entiendo. ¿Puede repetir?)"'},
+  {w:'Good morning',p:'/ɡʊd ˈmɔːrnɪŋ/',cat:'Saludos',m:'Buenos días (6am–12pm)',ex:'"Good morning! How are you? (¡Buenos días! ¿Cómo estás?)"'},
+  {w:'Good afternoon',p:'/ɡʊd ˌæftərˈnuːn/',cat:'Saludos',m:'Buenas tardes (12pm–6pm)',ex:'"Good afternoon! Welcome. (¡Buenas tardes! Bienvenido.)"'},
+  {w:'Good night',p:'/ɡʊd naɪt/',cat:'Saludos',m:'Buenas noches (al despedirse)',ex:'"Good night! See you tomorrow. (¡Buenas noches! Hasta mañana.)"'},
+  {w:'I would like...',p:'/aɪ wʊd laɪk/',cat:'Restaurante',m:'Quisiera...',ex:'"I would like a coffee. (Quisiera un café.)"'},
+  {w:'The bill, please',p:'/ðə bɪl pliːz/',cat:'Restaurante',m:'La cuenta, por favor',ex:'"Can I have the bill, please? (¿Me trae la cuenta, por favor?)"'},
+  {w:'Turn left',p:'/tɜːrn lɛft/',cat:'Direcciones',m:'Gira a la izquierda',ex:'"Turn left at the corner. (Gira a la izquierda en la esquina.)"'},
+  {w:'Turn right',p:'/tɜːrn raɪt/',cat:'Direcciones',m:'Gira a la derecha',ex:'"Turn right after the bank. (Gira a la derecha después del banco.)"'},
+  {w:'Go straight',p:'/ɡoʊ streɪt/',cat:'Direcciones',m:'Sigue recto',ex:'"Go straight for two blocks. (Sigue recto dos cuadras.)"'},
+  {w:'I don\'t feel well',p:'/aɪ doʊnt fiːl wɛl/',cat:'Salud',m:'No me siento bien',ex:'"I don\'t feel well. I have a fever. (No me siento bien. Tengo fiebre.)"'},
+  {w:'How are you?',p:'/haʊ ɑːr juː/',cat:'Saludos',m:'¿Cómo estás?',ex:'"How are you? I\'m fine, thanks! (¿Cómo estás? ¡Estoy bien, gracias!)"'},
+  {w:'Nice to meet you',p:'/naɪs tə miːt juː/',cat:'Saludos',m:'Mucho gusto',ex:'"Nice to meet you! (¡Mucho gusto!)"'},
+  {w:'I\'m from...',p:'/aɪm frɒm/',cat:'Presentación',m:'Soy de...',ex:'"I\'m from Mexico. (Soy de México.)"'},
+  {w:'My name is...',p:'/maɪ neɪm ɪz/',cat:'Presentación',m:'Me llamo...',ex:'"My name is Maria. (Me llamo María.)"'},
+  {w:'Can I pay by card?',p:'/kæn aɪ peɪ baɪ kɑːrd/',cat:'Compras',m:'¿Puedo pagar con tarjeta?',ex:'"Can I pay by card? (¿Puedo pagar con tarjeta?)"'},
+  {w:'I have a reservation',p:'/aɪ hæv ə rɛzərˈveɪʃən/',cat:'Viajes',m:'Tengo una reservación',ex:'"I have a reservation. (Tengo una reservación.)"'},
+  {w:'What time is it?',p:'/wɒt taɪm ɪz ɪt/',cat:'Básico',m:'¿Qué hora es?',ex:'"What time is it? It\'s 3 o\'clock. (¿Qué hora es? Son las tres.)"'},
+  {w:'Today / Tomorrow',p:'/təˈdeɪ/ /təˈmɒroʊ/',cat:'Tiempo',m:'Hoy / Mañana',ex:'"See you tomorrow! (¡Hasta mañana!)"'},
+  {w:'Help me, please',p:'/hɛlp miː pliːz/',cat:'Emergencias',m:'Ayúdame, por favor',ex:'"Help me, please! I\'m lost. (¡Ayúdame! Estoy perdido.)"'},
+  {w:'I\'m lost',p:'/aɪm lɒst/',cat:'Emergencias',m:'Estoy perdido/a',ex:'"I\'m lost. Where is the hotel? (Estoy perdido. ¿Dónde está el hotel?)"'},
+  {w:'Too expensive',p:'/tuː ɪkˈspɛnsɪv/',cat:'Compras',m:'Muy caro',ex:'"That\'s too expensive. (Eso es muy caro.)"'},
+  {w:'I\'ll take it',p:'/aɪl teɪk ɪt/',cat:'Compras',m:'Me lo llevo',ex:'"I\'ll take it, please. (Me lo llevo, por favor.)"'},
+];
+
+function loadVc(){
+  if(curVc>=VOCAB.length)curVc=0;
+  var v=VOCAB[curVc];
+  document.getElementById('vcProg').textContent='Tarjeta '+(curVc+1)+' de '+VOCAB.length;
+  document.getElementById('vcKnow').textContent=vcKnow;document.getElementById('vcDone').textContent=vcDone;
+  var word=v.w.split('/')[0].trim();
+  document.getElementById('vcCard').innerHTML='<div class="vc-card"><div class="vc-word">'+v.w+'</div><div class="vc-phon">'+v.p+'</div><div class="vc-cat">'+v.cat+'</div><div class="vc-meaning">🇪🇸 '+v.m+'</div><div class="vc-ex">'+v.ex+'</div><div class="vc-btns"><button class="vc-btn hear" onclick="speakWord(\''+word.replace(/'/g,"\\'")+'\')" >🔊 Escuchar</button><button class="vc-btn dunno" onclick="markVc(false)">❌ No la sabía</button><button class="vc-btn know" onclick="markVc(true)">✅ Ya la sabía</button></div></div>';
+}
+function markVc(knew){vcDone++;if(!knew){addXP(5);}else{vcKnow++;}curVc=(curVc+1)%VOCAB.length;loadVc();saveState();}
+
+// ── EXERCISES ──────────────────────────────────
+var EXER=[
+  {type:'mc',q:'¿Cómo se dice "Buenos días"?',opts:['Good night','Good morning','Good afternoon','Hello'],ans:1,exp:'✅ "Good morning" = Buenos días ☀️ (6am–12pm)'},
+  {type:'mc',q:'"How are you?" — ¿Qué respondes?',opts:['I am 25.','I am fine, thank you!','My name is Carlos.','I live here.'],ans:1,exp:'✅ "I am fine, thank you!" = Estoy bien, ¡gracias!'},
+  {type:'fill',q:'Completa: "My name ___ Carlos."',blank:'is',before:'My name ',after:' Carlos.',hint:'💡 Verbo to be con He/She/It → ___',exp:'✅ "is" — I→am · He/She/It→is · We/You/They→are'},
+  {type:'mc',q:'¿Cómo preguntas el precio?',opts:['Where is it?','How much is it?','What time is it?','Who is it?'],ans:1,exp:'✅ "How much is it?" = ¿Cuánto cuesta? 🛒'},
+  {type:'fill',q:'Completa: "I ___ from Mexico."',blank:'am',before:'I ',after:' from Mexico.',hint:'💡 Verbo to be con "I" → ___',exp:'✅ "am" — I am = Yo soy/estoy'},
+  {type:'mc',q:'¿Qué significa "Please"?',opts:['Gracias','De nada','Por favor','Perdón'],ans:2,exp:'✅ "Please" = Por favor 😊'},
+  {type:'mc',q:'¿Cómo se dice "¿Dónde está el baño?"',opts:['Where is the exit?','What is the bathroom?','Where is the bathroom?','How is the bathroom?'],ans:2,exp:'✅ "Where is the bathroom?" 🚽'},
+  {type:'fill',q:'Completa: "Can I have the ___, please?" (La cuenta)',blank:'bill',before:'Can I have the ',after:', please?',hint:'💡 "the ___" en restaurantes',exp:'✅ "bill" = la cuenta (o "check" en EE.UU.) 🍽️'},
+  {type:'mc',q:'¿Cómo se dice "Mucho gusto"?',opts:['How are you?','Nice to meet you!','See you later!','Good morning!'],ans:1,exp:'✅ "Nice to meet you!" = ¡Mucho gusto!'},
+  {type:'mc',q:'"Gira a la izquierda" en inglés:',opts:['Turn right','Go straight','Turn left','Go back'],ans:2,exp:'✅ "Turn left" ⬅️ · "Turn right" ➡️ · "Go straight" ⬆️'},
+  {type:'fill',q:'Completa: "I ___ not understand."',blank:'do',before:'I ',after:' not understand.',hint:'💡 Auxiliar negativo presente',exp:'✅ "do" → "I don\'t understand" = No entiendo'},
+  {type:'mc',q:'"I need help" significa:',opts:['Quiero ayudar','Necesito ayuda','Tengo ayuda','¿Puedes ayudar?'],ans:1,exp:'✅ "I need help" = Necesito ayuda'},
+  {type:'mc',q:'¿Cómo dices "No me siento bien"?',opts:['I\'m not good','I don\'t feel well','I feel bad','I am sick'],ans:1,exp:'✅ "I don\'t feel well" es la forma más natural en inglés.'},
+  {type:'fill',q:'Completa: "What ___ is it?" (¿Qué hora es?)',blank:'time',before:'What ',after:' is it?',hint:'💡 La palabra "hora" en inglés',exp:'✅ "time" → "What time is it?" = ¿Qué hora es?'},
+  {type:'mc',q:'"I\'m from Mexico" significa:',opts:['Vivo en México','Soy de México','Viajo a México','Me gusta México'],ans:1,exp:'✅ "I\'m from Mexico" = Soy de México. "From" = origen.'},
+  {type:'mc',q:'¿Cómo se dice "Tengo hambre"?',opts:['I am hungry','I have hunger','I feel eat','I want food'],ans:0,exp:'✅ "I am hungry" = Tengo hambre. En inglés usamos "to be" (ser/estar) para sensaciones.'},
+];
+
+function loadEx(){
+  if(curEx>=EXER.length)curEx=0;
+  var ex=EXER[curEx],c=document.getElementById('exContainer'),n=curEx+1;
+  if(ex.type==='mc'){
+    c.innerHTML='<div class="ex-card"><div class="ex-label">📝 Ejercicio '+n+'/'+EXER.length+' · Opción múltiple</div><div class="ex-q">'+ex.q+'</div><div class="opts">'+ex.opts.map(function(o,i){return '<button class="opt" onclick="checkMC('+i+')">'+o+'</button>';}).join('')+'</div><div class="feedback" id="fb"></div><button class="next-btn" id="nBtn" onclick="nextEx()">Siguiente →</button></div>';
+  }else{
+    c.innerHTML='<div class="ex-card"><div class="ex-label">📝 Ejercicio '+n+'/'+EXER.length+' · Completar</div><div class="ex-q">'+ex.q+'</div><p style="font-size:.73rem;color:#9999bb;margin-bottom:9px;">'+ex.hint+'</p><div class="fill-wrap">'+ex.before+'<input class="fill-in" id="fi" placeholder="___"/>'+ex.after+'</div><button class="check-btn" onclick="checkFill()">✓ Verificar</button><div class="feedback" id="fb"></div><button class="next-btn" id="nBtn" onclick="nextEx()">Siguiente →</button></div>';
+  }
+}
+function checkMC(idx){
+  var ex=EXER[curEx];document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb');
+  var correct=(idx===ex.ans);
+  if(correct){document.querySelectorAll('.opt')[idx].classList.add('correct');fb.className='feedback ok show';fb.textContent=ex.exp;exC++;addXP(10);}
+  else{document.querySelectorAll('.opt')[idx].classList.add('wrong');document.querySelectorAll('.opt')[ex.ans].classList.add('correct');fb.className='feedback bad show';fb.textContent='❌ '+ex.exp;errors.push({wrong:ex.opts[idx],right:ex.opts[ex.ans],q:ex.q});}
+  exT++;document.getElementById('exC').textContent=exC;document.getElementById('exT').textContent=exT;document.getElementById('nBtn').classList.add('show');saveState();
+}
+function checkFill(){
+  var ex=EXER[curEx],val=(document.getElementById('fi')?document.getElementById('fi').value:'').trim().toLowerCase();
+  if(document.getElementById('fi'))document.getElementById('fi').disabled=true;
+  var fb=document.getElementById('fb');var correct=(val===ex.blank.toLowerCase());
+  if(correct){fb.className='feedback ok show';fb.textContent=ex.exp;exC++;addXP(10);}
+  else{fb.className='feedback bad show';fb.textContent='❌ La respuesta es "'+ex.blank+'". '+ex.exp;errors.push({wrong:val,right:ex.blank,q:ex.q});}
+  exT++;document.getElementById('exC').textContent=exC;document.getElementById('exT').textContent=exT;document.getElementById('nBtn').classList.add('show');saveState();
+}
+function nextEx(){curEx=(curEx+1)%EXER.length;loadEx();}
+
+// ── DICTADO ────────────────────────────────────
+var DICTADO=[
+  {en:'Hello, my name is Alex.',es:'Hola, me llamo Alex.'},
+  {en:'How are you today?',es:'¿Cómo estás hoy?'},
+  {en:'Nice to meet you!',es:'¡Mucho gusto!'},
+  {en:'Where is the bathroom?',es:'¿Dónde está el baño?'},
+  {en:'How much is it?',es:'¿Cuánto cuesta?'},
+  {en:'I don\'t understand.',es:'No entiendo.'},
+  {en:'Can you help me, please?',es:'¿Me puede ayudar, por favor?'},
+  {en:'I would like a coffee.',es:'Quisiera un café.'},
+  {en:'The weather is beautiful today.',es:'El clima está hermoso hoy.'},
+  {en:'See you tomorrow!',es:'¡Hasta mañana!'},
+];
+function loadDict(){
+  if(curDict>=DICTADO.length)curDict=0;
+  var d=DICTADO[curDict];
+  var c=document.getElementById('exContainer');
+  c.innerHTML='<div class="dict-card">'+
+    '<div class="ex-label">🎧 Dictado '+(curDict+1)+'/'+DICTADO.length+'</div>'+
+    '<p style="font-size:.78rem;color:#9999bb;margin-bottom:8px;">Escucha la frase y escríbela en inglés:</p>'+
+    '<button class="btn-primary" style="margin-bottom:10px;padding:10px;" onclick="speakWord(\''+d.en.replace(/'/g,"\\'")+'\')">🔊 Escuchar frase</button>'+
+    '<div class="dict-phrase" id="dictPhrase" style="display:none;">'+d.en+'</div>'+
+    '<div class="dict-hint" id="dictHint" style="display:none;">🇪🇸 '+d.es+'</div>'+
+    '<input class="dict-input" id="dictIn" placeholder="Escribe lo que escuchaste..." onkeydown="if(event.key===\'Enter\')checkDict()"/>'+
+    '<div class="dict-result" id="dictRes"></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="check-btn" onclick="checkDict()">✓ Verificar</button>'+
+    '<button class="btn-sm" onclick="document.getElementById(\'dictPhrase\').style.display=\'block\';document.getElementById(\'dictHint\').style.display=\'block\';">👁️ Ver respuesta</button>'+
+    '<button class="next-btn show" onclick="nextDict()">Siguiente →</button>'+
+    '</div></div>';
+}
+function checkDict(){
+  var d=DICTADO[curDict];
+  var val=(document.getElementById('dictIn')?document.getElementById('dictIn').value:'').trim().toLowerCase();
+  var correct=d.en.toLowerCase();
+  var r=document.getElementById('dictRes');
+  var pct=similarity(val,correct);
+  if(pct>=0.8){r.className='dict-result ok';r.textContent='✅ ¡Excelente! "'+d.en+'" — '+d.es;addXP(15);}
+  else if(pct>=0.5){r.className='dict-result ok';r.textContent='👍 Casi perfecto. La frase correcta es: "'+d.en+'" — '+d.es;addXP(8);}
+  else{r.className='dict-result bad';r.textContent='❌ La frase era: "'+d.en+'" — '+d.es;}
+  document.getElementById('dictPhrase').style.display='block';
+  document.getElementById('dictHint').style.display='block';
+  if(document.getElementById('dictIn'))document.getElementById('dictIn').disabled=true;
+  saveState();
+}
+function nextDict(){curDict=(curDict+1)%DICTADO.length;loadDict();}
+function similarity(a,b){var longer=a.length>b.length?a:b;var shorter=a.length>b.length?b:a;if(longer.length===0)return 1;var dist=editDistance(longer,shorter);return(longer.length-dist)/longer.length;}
+function editDistance(a,b){var m=a.length,n=b.length,dp=[];for(var i=0;i<=m;i++){dp[i]=[i];for(var j=1;j<=n;j++){if(i===0)dp[i][j]=j;else dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);}}return dp[m][n];}
+
+// ── JUEGOS ─────────────────────────────────────
+var MATCH_PAIRS=[
+  {en:'Hello',es:'Hola'},{en:'Thank you',es:'Gracias'},{en:'Please',es:'Por favor'},
+  {en:'Sorry',es:'Lo siento'},{en:'Good morning',es:'Buenos días'},{en:'Where is...?',es:'¿Dónde está...?'},
+];
+function startMatch(){
+  document.getElementById('gameMenu').style.display='none';
+  document.getElementById('gameArea').style.display='block';
+  var pairs=MATCH_PAIRS.slice(0,5);
+  var eng=pairs.map(function(p){return p.en;});
+  var esp=pairs.map(function(p){return p.es;}).sort(function(){return Math.random()-.5;});
+  matchSelected=null;
+  var html='<div class="sec-title">🔗 Emparejar — Une inglés con español</div>'+
+    '<div class="match-wrap">'+
+    '<div class="match-col" id="matchEng">'+eng.map(function(w,i){return '<div class="match-item" id="me'+i+'" onclick="selectMatch(\'en\','+i+',\''+w.replace(/'/g,"\\'")+'\')">'+w+'</div>';}).join('')+'</div>'+
+    '<div class="match-col" id="matchEsp">'+esp.map(function(w,i){return '<div class="match-item" id="ms'+i+'" onclick="selectMatch(\'es\','+i+',\''+w.replace(/'/g,"\\'")+'\')">'+w+'</div>';}).join('')+'</div>'+
+    '</div>'+
+    '<button class="btn-sm" style="margin-top:12px;" onclick="document.getElementById(\'gameMenu\').style.display=\'block\';document.getElementById(\'gameArea\').style.display=\'none\';">← Volver</button>';
+  document.getElementById('gameArea').innerHTML=html;
+}
+var matchPairs=MATCH_PAIRS;
+function selectMatch(lang,idx,word){
+  if(!matchSelected){
+    matchSelected={lang:lang,idx:idx,word:word};
+    var id=(lang==='en'?'me':'ms')+idx;
+    document.getElementById(id).classList.add('selected');
+  } else {
+    if(matchSelected.lang===lang){
+      document.getElementById((matchSelected.lang==='en'?'me':'ms')+matchSelected.idx).classList.remove('selected');
+      matchSelected={lang:lang,idx:idx,word:word};
+      document.getElementById((lang==='en'?'me':'ms')+idx).classList.add('selected');
+      return;
     }
-    showTranscript(f||i||'...');
-    if(f)document.getElementById('msgIn').value=f;
-  };
-  recognition.onend=function(){
-    isListening=false;
-    document.getElementById('micBtn').classList.remove('on');
-    document.getElementById('alexAv').classList.remove('listening');
-    setStatus('idle');
-    hideTranscript();
-    var t=document.getElementById('msgIn').value.trim();
-    if(t)send();
-  };
-  recognition.onerror=function(e){
-    isListening=false;
-    document.getElementById('micBtn').classList.remove('on');
-    document.getElementById('alexAv').classList.remove('listening');
-    setStatus('idle');
-    var m={'not-allowed':'⚠️ Permiso de micrófono denegado.','no-speech':'No se detectó voz.'};
-    showTranscript(m[e.error]||'Error: '+e.error);
-    setTimeout(hideTranscript,2500);
-  };
-  try{recognition.start();}catch(e){showTranscript('Error al iniciar micrófono.');}
+    var enWord=lang==='en'?word:matchSelected.word;
+    var esWord=lang==='es'?word:matchSelected.word;
+    var enIdx=lang==='en'?idx:matchSelected.idx;
+    var esIdx=lang==='es'?idx:matchSelected.idx;
+    var found=matchPairs.find(function(p){return p.en===enWord&&p.es===esWord;});
+    if(found){
+      document.getElementById('me'+enIdx).classList.remove('selected');document.getElementById('me'+enIdx).classList.add('correct');
+      document.getElementById('ms'+esIdx).classList.remove('selected');document.getElementById('ms'+esIdx).classList.add('correct');
+      addXP(5);
+    } else {
+      document.getElementById('me'+enIdx).classList.remove('selected');document.getElementById('me'+enIdx).classList.add('wrong');
+      document.getElementById('ms'+esIdx).classList.remove('selected');document.getElementById('ms'+esIdx).classList.add('wrong');
+      setTimeout(function(){document.getElementById('me'+enIdx).classList.remove('wrong');document.getElementById('ms'+esIdx).classList.remove('wrong');},700);
+    }
+    matchSelected=null;
+  }
 }
 
-function showTranscript(t){var el=document.getElementById('transcript');el.textContent=t;el.classList.add('show');}
-function hideTranscript(){document.getElementById('transcript').classList.remove('show');}
-
-function setStatus(mode){
-  var dot=document.getElementById('sdot');
-  var txt=document.getElementById('stxt');
-  var top=document.getElementById('topStatus');
-  if(mode==='speak'){dot.className='sdot talk';txt.textContent='Hablando...';top.textContent='Alex está hablando...';}
-  else if(mode==='listen'){dot.className='sdot listen';txt.textContent='Escuchando...';top.textContent='Escuchando...';}
-  else if(mode==='think'){dot.className='sdot talk';txt.textContent='Pensando...';top.textContent='Alex está pensando...';}
-  else{dot.className='sdot';txt.textContent='Listo';top.textContent='Tu amigo bilingüe · En línea';}
+var WORD_ORDER=[
+  {words:['My','name','is','Carlos'],answer:'My name is Carlos',es:'Me llamo Carlos.'},
+  {words:['How','are','you','today'],answer:'How are you today',es:'¿Cómo estás hoy?'},
+  {words:['Where','is','the','bathroom'],answer:'Where is the bathroom',es:'¿Dónde está el baño?'},
+  {words:['I','don\'t','understand'],answer:'I don\'t understand',es:'No entiendo.'},
+  {words:['Nice','to','meet','you'],answer:'Nice to meet you',es:'Mucho gusto.'},
+];
+var woIdx=0, woPlaced=[];
+function startWordOrder(){
+  woIdx=0;woPlaced=[];renderWordOrder();
+  document.getElementById('gameMenu').style.display='none';
+  document.getElementById('gameArea').style.display='block';
+}
+function renderWordOrder(){
+  if(woIdx>=WORD_ORDER.length){
+    document.getElementById('gameArea').innerHTML='<div class="welcome"><h2>🎉 ¡Completaste todos los ejercicios!</h2><p>Ganaste '+(WORD_ORDER.length*10)+' XP</p></div><button class="btn-sm" onclick="document.getElementById(\'gameMenu\').style.display=\'block\';document.getElementById(\'gameArea\').style.display=\'none\';">← Volver</button>';
+    return;
+  }
+  var wo=WORD_ORDER[woIdx];woPlaced=[];
+  var shuffled=wo.words.slice().sort(function(){return Math.random()-.5;});
+  var html='<div class="sec-title">🔀 Ordenar — Forma la frase correcta</div>'+
+    '<p style="font-size:.75rem;color:#9999bb;margin-bottom:8px;">🇪🇸 '+wo.es+'</p>'+
+    '<div class="word-answer" id="woAnswer"></div>'+
+    '<div class="word-chips" id="woChips">'+shuffled.map(function(w,i){return '<div class="word-chip" id="wc'+i+'" onclick="placeWord(\''+w.replace(/'/g,"\\'")+'\','+i+')">'+w+'</div>';}).join('')+'</div>'+
+    '<div style="display:flex;gap:8px;margin-top:6px;">'+
+    '<button class="check-btn" onclick="checkWordOrder()">✓ Verificar</button>'+
+    '<button class="btn-sm" onclick="woPlaced=[];renderWordOrder()">↺ Reintentar</button>'+
+    '</div>'+
+    '<div class="feedback" id="woFb"></div>'+
+    '<button class="btn-sm" style="margin-top:10px;display:none;" id="woNext" onclick="woIdx++;woPlaced=[];renderWordOrder()">Siguiente →</button>'+
+    '<br><button class="btn-sm" style="margin-top:8px;" onclick="document.getElementById(\'gameMenu\').style.display=\'block\';document.getElementById(\'gameArea\').style.display=\'none\';">← Volver</button>';
+  document.getElementById('gameArea').innerHTML=html;
+}
+function placeWord(word,idx){
+  var chip=document.getElementById('wc'+idx);
+  if(chip.classList.contains('used'))return;
+  chip.classList.add('used');
+  woPlaced.push({word:word,idx:idx});
+  var ans=document.getElementById('woAnswer');
+  var d=document.createElement('div');d.className='word-chip placed';d.textContent=word;
+  d.onclick=(function(w,i){return function(){chip.classList.remove('used');woPlaced=woPlaced.filter(function(x){return x.idx!==i;});ans.removeChild(d);};})(word,idx);
+  ans.appendChild(d);
+}
+function checkWordOrder(){
+  var wo=WORD_ORDER[woIdx];
+  var attempt=woPlaced.map(function(x){return x.word;}).join(' ');
+  var fb=document.getElementById('woFb');
+  if(attempt.toLowerCase()===wo.answer.toLowerCase()){fb.className='feedback ok show';fb.textContent='✅ ¡Perfecto! "'+wo.answer+'" — '+wo.es;addXP(10);document.getElementById('woNext').style.display='inline-block';}
+  else{fb.className='feedback bad show';fb.textContent='❌ La respuesta es: "'+wo.answer+'"';}
 }
 
-// ── TOPICS ──────────────────────────────────
-var TOPIC_CONTEXTS={
-  free:'Conversación libre y natural.',
-  greetings:'El estudiante quiere practicar saludos y presentaciones.',
-  shopping:'El estudiante quiere practicar vocabulario de compras.',
-  restaurant:'El estudiante quiere practicar en un restaurante.',
-  travel:'El estudiante quiere practicar viajes, aeropuerto y hotel.',
-  work:'El estudiante quiere practicar inglés para el trabajo.',
-  family:'El estudiante quiere practicar cómo hablar de su familia.',
-  health:'El estudiante quiere practicar vocabulario de salud.',
-  weather:'El estudiante quiere practicar cómo hablar del clima.',
+// ── PROGRESO ───────────────────────────────────
+function updateProgress(){
+  document.getElementById('pStreak').textContent=streak;
+  document.getElementById('pXP').textContent=xp;
+  document.getElementById('pWords').textContent=vcKnow;
+  document.getElementById('pExer').textContent=exC;
+  var vocPct=Math.min(100,Math.round(vcDone/VOCAB.length*100));
+  var exPct=exT>0?Math.min(100,Math.round(exC/exT*100)):0;
+  var convPct=Math.min(100,Math.round(convMsgs/50*100));
+  document.getElementById('pVocPct').textContent=vocPct+'%';document.getElementById('pVocBar').style.width=vocPct+'%';
+  document.getElementById('pExPct').textContent=exPct+'%';document.getElementById('pExBar').style.width=exPct+'%';
+  document.getElementById('pConvPct').textContent=convPct+'%';document.getElementById('pConvBar').style.width=convPct+'%';
+  var errHtml='';
+  if(errors.length===0){errHtml='<div style="font-size:.75rem;color:#7777aa;">¡Sin errores registrados aún! Sigue practicando.</div>';}
+  else{errors.slice(-8).reverse().forEach(function(e){errHtml+='<div class="err-item"><span class="wrong-word">'+e.wrong+'</span><span class="arrow">→</span><span class="right-word">'+e.right+'</span><div style="font-size:.68rem;color:#7777aa;margin-top:2px;">'+e.q+'</div></div>';});}
+  document.getElementById('errList').innerHTML=errHtml;
+}
+
+// ── DICCIONARIO ────────────────────────────────
+var DICT=[
+  {en:'hello',es:'hola',phon:'/həˈloʊ/',cat:'Saludos',ex:['"*Hello*! My name is Ana. (¡*Hola*! Me llamo Ana.)"','"*Hello*, is anybody there? (¡*Hola*, hay alguien ahí?)"']},
+  {en:'goodbye',es:'adiós / hasta luego',phon:'/ɡʊdˈbaɪ/',cat:'Saludos',ex:['"*Goodbye*! See you tomorrow. (*¡Adiós*! Hasta mañana.)"']},
+  {en:'please',es:'por favor',phon:'/pliːz/',cat:'Cortesía',ex:['"Water, *please*. (Agua, *por favor*.)"','"Can I have the menu, *please*? (¿Me da el menú, *por favor*?)"']},
+  {en:'thank you',es:'gracias',phon:'/θæŋk juː/',cat:'Cortesía',ex:['"*Thank you* very much! (¡Muchas *gracias*!)"']},
+  {en:'sorry',es:'lo siento / perdón',phon:'/ˈsɒri/',cat:'Cortesía',ex:['"*Sorry*, I don't understand. (*Lo siento*, no entiendo.)"']},
+  {en:'house',es:'casa',phon:'/haʊs/',cat:'Hogar',ex:['"I live in a big *house*. (Vivo en una *casa* grande.)"','"This is my *house*. (Esta es mi *casa*.)"']},
+  {en:'dog',es:'perro',phon:'/dɒɡ/',cat:'Animales',ex:['"My *dog* is very friendly. (Mi *perro* es muy amigable.)"']},
+  {en:'cat',es:'gato',phon:'/kæt/',cat:'Animales',ex:['"The *cat* is sleeping. (El *gato* está durmiendo.)"']},
+  {en:'water',es:'agua',phon:'/ˈwɔːtər/',cat:'Comida',ex:['"Can I have some *water*, please? (¿Me da un poco de *agua*, por favor?)"']},
+  {en:'food',es:'comida',phon:'/fuːd/',cat:'Comida',ex:['"The *food* is delicious! (¡La *comida* está deliciosa!)"']},
+  {en:'happy',es:'feliz / contento',phon:'/ˈhæpi/',cat:'Emociones',ex:['"I am very *happy* today! (¡Estoy muy *feliz* hoy!)"']},
+  {en:'sad',es:'triste',phon:'/sæd/',cat:'Emociones',ex:['"Why are you *sad*? (¿Por qué estás *triste*?)"']},
+  {en:'big',es:'grande',phon:'/bɪɡ/',cat:'Adjetivos',ex:['"This is a *big* city. (Esta es una ciudad *grande*.)"']},
+  {en:'small',es:'pequeño / chico',phon:'/smɔːl/',cat:'Adjetivos',ex:['"I have a *small* dog. (Tengo un perro *pequeño*.)"']},
+  {en:'work',es:'trabajo / trabajar',phon:'/wɜːrk/',cat:'Trabajo',ex:['"I *work* every day. (*Trabajo* todos los días.)"','"My *work* is interesting. (Mi *trabajo* es interesante.)"']},
+  {en:'money',es:'dinero',phon:'/ˈmʌni/',cat:'Compras',ex:['"How much *money* does it cost? (¿Cuánto *dinero* cuesta?)"']},
+  {en:'time',es:'tiempo / hora',phon:'/taɪm/',cat:'Básico',ex:['"What *time* is it? (¿Qué hora es?)"','"I don't have *time*. (No tengo *tiempo*.)"']},
+  {en:'friend',es:'amigo / amiga',phon:'/frɛnd/',cat:'Personas',ex:['"She is my best *friend*. (Ella es mi mejor *amiga*.)"']},
+  {en:'family',es:'familia',phon:'/ˈfæməli/',cat:'Personas',ex:['"I love my *family*. (Amo a mi *familia*.)"']},
+  {en:'school',es:'escuela / colegio',phon:'/skuːl/',cat:'Educación',ex:['"I go to *school* every day. (Voy a la *escuela* todos los días.)"']},
+  {en:'book',es:'libro',phon:'/bʊk/',cat:'Educación',ex:['"I love reading *books*. (Me encanta leer *libros*.)"']},
+  {en:'beautiful',es:'hermoso / bonito',phon:'/ˈbjuːtɪfəl/',cat:'Adjetivos',ex:['"The sunset is *beautiful*. (El atardecer es *hermoso*.)"']},
+  {en:'eat',es:'comer',phon:'/iːt/',cat:'Comida',ex:['"I want to *eat* pizza. (Quiero *comer* pizza.)"']},
+  {en:'drink',es:'beber / tomar',phon:'/drɪŋk/',cat:'Comida',ex:['"Would you like to *drink* something? (¿Quieres *tomar* algo?)"']},
+  {en:'go',es:'ir',phon:'/ɡoʊ/',cat:'Verbos',ex:['"I need to *go* now. (Necesito *irme* ahora.)"','"Let's *go*! (¡*Vamos*!)"']},
+  {en:'come',es:'venir',phon:'/kʌm/',cat:'Verbos',ex:['"*Come* here, please. (*Ven* aquí, por favor.)"']},
+  {en:'see',es:'ver',phon:'/siː/',cat:'Verbos',ex:['"I can *see* the mountains. (Puedo *ver* las montañas.)"','"*See* you later! (¡Hasta luego!)"']},
+  {en:'love',es:'amor / amar',phon:'/lʌv/',cat:'Emociones',ex:['"I *love* this song. (Me *encanta* esta canción.)"']},
+  {en:'good',es:'bueno',phon:'/ɡʊd/',cat:'Adjetivos',ex:['"This is very *good*! (¡Esto está muy *bueno*!)"']},
+  {en:'bad',es:'malo',phon:'/bæd/',cat:'Adjetivos',ex:['"This is *bad*. (Esto es *malo*.)"']},
+  {en:'hot',es:'caliente / caluroso',phon:'/hɒt/',cat:'Clima',ex:['"It's very *hot* today. (Está muy *caluroso* hoy.)"']},
+  {en:'cold',es:'frío',phon:'/koʊld/',cat:'Clima',ex:['"I feel *cold*. (Tengo *frío*.)"']},
+  {en:'hospital',es:'hospital',phon:'/ˈhɒspɪtl/',cat:'Salud',ex:['"I need to go to the *hospital*. (Necesito ir al *hospital*.)"']},
+  {en:'doctor',es:'médico / doctor',phon:'/ˈdɒktər/',cat:'Salud',ex:['"I need to see a *doctor*. (Necesito ver a un *médico*.)"']},
+  {en:'car',es:'carro / auto',phon:'/kɑːr/',cat:'Transporte',ex:['"I drive my *car* to work. (Manejo mi *carro* al trabajo.)"']},
+  {en:'bus',es:'autobús / bus',phon:'/bʌs/',cat:'Transporte',ex:['"I take the *bus* every day. (Tomo el *bus* todos los días.)"']},
+  {en:'hotel',es:'hotel',phon:'/hoʊˈtɛl/',cat:'Viajes',ex:['"I have a reservation at this *hotel*. (Tengo una reservación en este *hotel*.)"']},
+  {en:'airport',es:'aeropuerto',phon:'/ˈɛrpɔːrt/',cat:'Viajes',ex:['"The *airport* is very big. (El *aeropuerto* es muy grande.)"']},
+  {en:'sun',es:'sol',phon:'/sʌn/',cat:'Naturaleza',ex:['"The *sun* is very bright today. (El *sol* está muy brillante hoy.)"']},
+  {en:'rain',es:'lluvia / llover',phon:'/reɪn/',cat:'Naturaleza',ex:['"It's going to *rain* tomorrow. (Va a *llover* mañana.)"']},
+  // Spanish lookup support
+  {es_search:'hola',en:'hello'},{es_search:'casa',en:'house'},{es_search:'perro',en:'dog'},
+  {es_search:'gato',en:'cat'},{es_search:'agua',en:'water'},{es_search:'comida',en:'food'},
+  {es_search:'feliz',en:'happy'},{es_search:'triste',en:'sad'},{es_search:'grande',en:'big'},
+  {es_search:'pequeño',en:'small'},{es_search:'trabajo',en:'work'},{es_search:'dinero',en:'money'},
+  {es_search:'tiempo',en:'time'},{es_search:'amigo',en:'friend'},{es_search:'familia',en:'family'},
+  {es_search:'escuela',en:'school'},{es_search:'libro',en:'book'},{es_search:'hermoso',en:'beautiful'},
+  {es_search:'comer',en:'eat'},{es_search:'beber',en:'drink'},{es_search:'ir',en:'go'},
+  {es_search:'venir',en:'come'},{es_search:'ver',en:'see'},{es_search:'amor',en:'love'},
+  {es_search:'bueno',en:'good'},{es_search:'malo',en:'bad'},{es_search:'caliente',en:'hot'},
+  {es_search:'frio',en:'cold'},{es_search:'hospital',en:'hospital'},{es_search:'medico',en:'doctor'},
+  {es_search:'carro',en:'car'},{es_search:'autobus',en:'bus'},{es_search:'hotel',en:'hotel'},
+  {es_search:'aeropuerto',en:'airport'},{es_search:'sol',en:'sun'},{es_search:'lluvia',en:'rain'},
+  {es_search:'adios',en:'goodbye'},{es_search:'gracias',en:'thank you'},{es_search:'por favor',en:'please'},
+];
+var dictHistory=[];
+
+function initDict(){
+  renderDictHistory();
+}
+
+function dictSearch(query){
+  query=query.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  if(!query){document.getElementById('dictResult').classList.remove('show');return;}
+  // Try exact English match
+  var found=DICT.find(function(d){return d.en&&d.en.toLowerCase()===query;});
+  // Try Spanish search redirect
+  if(!found){var redir=DICT.find(function(d){return d.es_search&&(d.es_search===query||d.es_search.includes(query));});if(redir)found=DICT.find(function(d){return d.en===redir.en&&d.phon;});}
+  // Try partial English match
+  if(!found)found=DICT.find(function(d){return d.en&&d.en.includes(query)&&d.phon;});
+  // Try Spanish translation match
+  if(!found)found=DICT.find(function(d){return d.es&&d.es.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(query)&&d.phon;});
+
+  var r=document.getElementById('dictResult');
+  if(!found){
+    r.classList.add('show');
+    r.innerHTML='<div class="dict-not-found">😕 No encontramos "<strong>'+query+'</strong>".<br><span style="font-size:.72rem;color:#6666aa;">Prueba en inglés: happy, house, work...</span></div>';
+    return;
+  }
+  // Add to history
+  if(dictHistory.indexOf(found.en)<0){dictHistory.unshift(found.en);if(dictHistory.length>8)dictHistory.pop();}
+  renderDictHistory();
+  var exHtml=found.ex?found.ex.map(function(e){return '<div>'+e.replace(/\*([^*]+)\*/g,'<strong>$1</strong>')+'</div>';}).join(''):'';
+  r.classList.add('show');
+  r.innerHTML='<div class="dict-word">'+found.en+'</div>'+
+    '<div class="dict-phon">'+found.phon+'</div>'+
+    '<button class="dict-hear" onclick="speakWord(''+found.en+'')">🔊 Escuchar pronunciación</button>'+
+    '<div class="dict-cats"><span class="dict-cat">'+found.cat+'</span></div>'+
+    '<div class="dict-trans">🇪🇸 '+found.es+'</div>'+
+    (exHtml?'<div class="dict-examples">'+exHtml+'</div>':'');
+}
+
+function renderDictHistory(){
+  var ch=document.getElementById('dictChips');
+  if(!ch)return;
+  if(dictHistory.length===0){document.getElementById('dictHistory').style.display='none';return;}
+  document.getElementById('dictHistory').style.display='block';
+  ch.innerHTML=dictHistory.map(function(w){return '<div class="dict-chip" onclick="document.getElementById('dictSearchIn').value=''+w+'';dictSearch(''+w+'')">'+w+'</div>';}).join('');
+}
+
+// ── VOCABULARIO VISUAL ──────────────────────────
+var VISUAL_VOCAB={
+  'Animales':[
+    {en:'Dog',es:'Perro',emoji:'🐶',phon:'/dɒɡ/',ex:'"My *dog* is very friendly. (Mi *perro* es muy amigable.)"'},
+    {en:'Cat',es:'Gato',emoji:'🐱',phon:'/kæt/',ex:'"The *cat* is sleeping. (El *gato* está durmiendo.)"'},
+    {en:'Bird',es:'Pájaro',emoji:'🐦',phon:'/bɜːrd/',ex:'"I see a *bird* in the tree. (Veo un *pájaro* en el árbol.)"'},
+    {en:'Fish',es:'Pez',emoji:'🐟',phon:'/fɪʃ/',ex:'"I have a *fish* at home. (Tengo un *pez* en casa.)"'},
+    {en:'Horse',es:'Caballo',emoji:'🐴',phon:'/hɔːrs/',ex:'"The *horse* is running. (El *caballo* está corriendo.)"'},
+    {en:'Elephant',es:'Elefante',emoji:'🐘',phon:'/ˈɛlɪfənt/',ex:'"The *elephant* is very big. (El *elefante* es muy grande.)"'},
+  ],
+  'Comida':[
+    {en:'Apple',es:'Manzana',emoji:'🍎',phon:'/ˈæpəl/',ex:'"I eat an *apple* every day. (Como una *manzana* todos los días.)"'},
+    {en:'Bread',es:'Pan',emoji:'🍞',phon:'/brɛd/',ex:'"I want some *bread*, please. (Quiero *pan*, por favor.)"'},
+    {en:'Coffee',es:'Café',emoji:'☕',phon:'/ˈkɒfi/',ex:'"I drink *coffee* every morning. (Tomo *café* cada mañana.)"'},
+    {en:'Pizza',es:'Pizza',emoji:'🍕',phon:'/ˈpiːtsə/',ex:'"I love *pizza*! (¡Me encanta la *pizza*!)"'},
+    {en:'Rice',es:'Arroz',emoji:'🍚',phon:'/raɪs/',ex:'"I eat *rice* every day. (Como *arroz* todos los días.)"'},
+    {en:'Chicken',es:'Pollo',emoji:'🍗',phon:'/ˈtʃɪkɪn/',ex:'"I'll have the *chicken*, please. (Voy a querer el *pollo*, por favor.)"'},
+  ],
+  'Hogar':[
+    {en:'House',es:'Casa',emoji:'🏠',phon:'/haʊs/',ex:'"I live in a big *house*. (Vivo en una *casa* grande.)"'},
+    {en:'Bed',es:'Cama',emoji:'🛏️',phon:'/bɛd/',ex:'"I go to *bed* at 10pm. (Me voy a la *cama* a las 10pm.)"'},
+    {en:'Chair',es:'Silla',emoji:'🪑',phon:'/tʃɛr/',ex:'"Please sit on the *chair*. (Por favor siéntate en la *silla*.)"'},
+    {en:'Door',es:'Puerta',emoji:'🚪',phon:'/dɔːr/',ex:'"Please close the *door*. (Por favor cierra la *puerta*.)"'},
+    {en:'Window',es:'Ventana',emoji:'🪟',phon:'/ˈwɪndoʊ/',ex:'"Open the *window*, please. (Abre la *ventana*, por favor.)"'},
+    {en:'Kitchen',es:'Cocina',emoji:'🍳',phon:'/ˈkɪtʃɪn/',ex:'"She is in the *kitchen*. (Ella está en la *cocina*.)"'},
+  ],
+  'Transporte':[
+    {en:'Car',es:'Carro',emoji:'🚗',phon:'/kɑːr/',ex:'"I drive my *car* to work. (Manejo mi *carro* al trabajo.)"'},
+    {en:'Bus',es:'Bus',emoji:'🚌',phon:'/bʌs/',ex:'"I take the *bus* every day. (Tomo el *bus* todos los días.)"'},
+    {en:'Airplane',es:'Avión',emoji:'✈️',phon:'/ˈɛrpleɪn/',ex:'"I travel by *airplane*. (Viajo en *avión*.)"'},
+    {en:'Train',es:'Tren',emoji:'🚂',phon:'/treɪn/',ex:'"The *train* arrives at 3pm. (El *tren* llega a las 3pm.)"'},
+    {en:'Bicycle',es:'Bicicleta',emoji:'🚲',phon:'/ˈbaɪsɪkəl/',ex:'"I ride my *bicycle* to school. (Voy en *bicicleta* a la escuela.)"'},
+    {en:'Taxi',es:'Taxi',emoji:'🚕',phon:'/ˈtæksi/',ex:'"I need a *taxi*, please. (Necesito un *taxi*, por favor.)"'},
+  ],
+  'Clima':[
+    {en:'Sun',es:'Sol',emoji:'☀️',phon:'/sʌn/',ex:'"The *sun* is shining. (El *sol* está brillando.)"'},
+    {en:'Rain',es:'Lluvia',emoji:'🌧️',phon:'/reɪn/',ex:'"It's going to *rain*. (Va a *llover*.)"'},
+    {en:'Snow',es:'Nieve',emoji:'❄️',phon:'/snoʊ/',ex:'"It's snowing! (¡Está *nevando*!)"'},
+    {en:'Wind',es:'Viento',emoji:'💨',phon:'/wɪnd/',ex:'"It's very *windy* today. (Hay mucho *viento* hoy.)"'},
+    {en:'Cloud',es:'Nube',emoji:'☁️',phon:'/klaʊd/',ex:'"There are many *clouds*. (Hay muchas *nubes*.)"'},
+    {en:'Storm',es:'Tormenta',emoji:'⛈️',phon:'/stɔːrm/',ex:'"There is a big *storm* coming. (Se acerca una gran *tormenta*.)"'},
+  ],
+  'Cuerpo':[
+    {en:'Head',es:'Cabeza',emoji:'🗣️',phon:'/hɛd/',ex:'"My *head* hurts. (Me duele la *cabeza*.)"'},
+    {en:'Hand',es:'Mano',emoji:'✋',phon:'/hænd/',ex:'"Give me your *hand*. (Dame tu *mano*.)"'},
+    {en:'Eye',es:'Ojo',emoji:'👁️',phon:'/aɪ/',ex:'"She has beautiful *eyes*. (Ella tiene *ojos* bonitos.)"'},
+    {en:'Mouth',es:'Boca',emoji:'👄',phon:'/maʊθ/',ex:'"Open your *mouth*. (Abre la *boca*.)"'},
+    {en:'Ear',es:'Oído / Oreja',emoji:'👂',phon:'/ɪr/',ex:'"I can't hear with my left *ear*. (No puedo escuchar con el *oído* izquierdo.)"'},
+    {en:'Heart',es:'Corazón',emoji:'❤️',phon:'/hɑːrt/',ex:'"My *heart* beats fast. (Mi *corazón* late rápido.)"'},
+  ],
 };
+var visualCat='Animales', selectedVis=null;
 
-var SYSTEM=`Eres Alex, un amigo bilingüe (inglés-español) que ayuda a alguien a aprender inglés de forma natural.
+function initVisual(){
+  var cats=Object.keys(VISUAL_VOCAB);
+  var catsHtml=cats.map(function(c){return '<button class="vcat-btn'+(c===visualCat?' active':'')+'" onclick="setVisualCat(''+c+'',this)">'+c+'</button>';}).join('');
+  document.getElementById('visualCats').innerHTML=catsHtml;
+  renderVisualGrid();
+}
 
-TU PERSONALIDAD:
-- Eres amigable, divertido y relajado — como un amigo real, no un maestro formal
-- Hablas de forma natural, con energía y entusiasmo
-- A veces usas expresiones coloquiales para que el aprendizaje sea real
-
-CÓMO HABLAS — REGLA PRINCIPAL:
-Cada cosa que dices la escribes en DOS líneas:
-Línea 1 (inglés): La frase en inglés, natural y conversacional
-Línea 2 (🇪🇸 español): La misma idea en español, para que entienda
-
-Ejemplo:
-"Hey! How's it going? 😊
-🇪🇸 ¡Hola! ¿Cómo te va?"
-
-REGLAS ADICIONALES:
-1. Resalta palabras clave con *asteriscos* para que las memorice
-2. Cuando uses una palabra nueva o difícil, agrega al final: 💡 *palabra* = significado
-3. Si el estudiante comete un error, corrígelo de forma natural y amigable:
-   "Almost! We say '*I am*' not 'I is' — in English 'am' is only for 'I' 😊
-   🇪🇸 ¡Casi! Se dice 'I am' no 'I is' — en inglés 'am' solo va con 'I'"
-4. Si el estudiante escribe en español, respóndele mostrando cómo se dice en inglés primero
-5. Mantén respuestas cortas (3-5 líneas) para que sean fáciles de leer y escuchar
-6. SIEMPRE termina con una pregunta simple para mantener la conversación
-7. Varía tu energía — a veces di "That's awesome!", "Oh nice!", "Really?", "No way!" para sonar real
-8. NUNCA respondas solo en inglés sin la traducción al español`;
-
-var QUICK_BY_TOPIC={
-  free:['Hello! 👋','How are you?','I don\'t understand','Can you repeat?','What does that mean?'],
-  greetings:['Hello! Nice to meet you!','My name is...','Where are you from?','How are you?','See you later!'],
-  shopping:['How much is this?','I\'ll take it!','Too expensive!','Do you have my size?','Can I pay by card?'],
-  restaurant:['Table for two, please.','What do you recommend?','I\'ll have the chicken.','The bill, please!','It\'s delicious!'],
-  travel:['I have a reservation.','Where is gate 12?','I need a taxi.','Do you have WiFi?','My luggage is lost!'],
-  work:['Good morning!','I have a question.','Can you help me?','I agree!','Let\'s have a meeting.'],
-  family:['I have a brother.','My mom is a teacher.','I\'m married.','I have two kids.','My family is big!'],
-  health:['I don\'t feel well.','I have a headache.','I need a doctor.','Where\'s the pharmacy?','I have a fever.'],
-  weather:['It\'s so hot today!','It\'s raining!','Beautiful weather!','I need an umbrella.','It\'s freezing!'],
-};
-
-function setTopic(el, topic){
-  curTopic=topic;
-  document.querySelectorAll('.topic-chip').forEach(function(c){c.classList.remove('active');});
+function setVisualCat(cat,el){
+  visualCat=cat;selectedVis=null;
+  document.getElementById('visDetail').classList.remove('show');
+  document.querySelectorAll('.vcat-btn').forEach(function(b){b.classList.remove('active');});
   el.classList.add('active');
-  setQuickReplies(QUICK_BY_TOPIC[topic]||QUICK_BY_TOPIC.free);
-  // Reset conversation with new context
-  chatHistory=[];
-  document.getElementById('msgs').innerHTML='';
-  startConversation(topic);
+  renderVisualGrid();
 }
 
-function setQuickReplies(arr){
-  var q=document.getElementById('quickR');
-  q.innerHTML=arr.map(function(s){
-    var sf=s.replace(/'/g,"\\'");
-    return '<div class="qr" onclick="document.getElementById(\'msgIn\').value=\''+sf+'\';send()">'+s+'</div>';
+function renderVisualGrid(){
+  var items=VISUAL_VOCAB[visualCat]||[];
+  document.getElementById('visualGrid').innerHTML=items.map(function(v,i){
+    return '<div class="vis-card" onclick="showVisDetail('+i+')">'+
+      '<div class="vis-img">'+v.emoji+'</div>'+
+      '<div class="vis-body"><div class="vis-en">'+v.en+'</div><div class="vis-es">'+v.es+'</div></div>'+
+      '</div>';
   }).join('');
 }
 
-// ── CHAT ────────────────────────────────────
-function fmtMsg(text){
-  // Format bilingual message
-  var lines=text.split('\n');
-  var html='';
-  lines.forEach(function(line){
-    line=line.trim();
-    if(!line)return;
-    if(line.startsWith('🇪🇸')){
-      html+='<div class="es-line">'+line+'</div>';
-    } else if(line.startsWith('💡')){
-      html+='<div class="word-tip">'+line+'</div>';
-    } else {
-      // Bold asterisks
-      line=line.replace(/\*([^*]+)\*/g,'<strong style="color:#a78bfa;">$1</strong>');
-      html+='<div class="en">'+line+'</div>';
-    }
-  });
-  return html;
+function showVisDetail(idx){
+  var v=VISUAL_VOCAB[visualCat][idx];
+  if(!v)return;
+  selectedVis=idx;
+  var d=document.getElementById('visDetail');
+  d.innerHTML='<div class="vis-detail-img">'+v.emoji+'</div>'+
+    '<div class="vis-detail-word">'+v.en+'</div>'+
+    '<div class="vis-detail-phon">'+v.phon+'</div>'+
+    '<div class="vis-detail-es">🇪🇸 '+v.es+'</div>'+
+    '<div class="vis-detail-ex">'+v.ex.replace(/\*([^*]+)\*/g,'<strong style="color:#a78bfa;">$1</strong>')+'</div>'+
+    '<div class="vis-detail-btns">'+
+    '<button class="vc-btn hear" onclick="speakWord(''+v.en+'')">🔊 Escuchar</button>'+
+    '<button class="vc-btn know" onclick="addXP(5);this.textContent='✅ +5 XP!';this.disabled=true;">✅ Aprendida</button>'+
+    '</div>';
+  d.classList.add('show');
+  d.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function addAlexMsg(text){
-  var c=document.getElementById('msgs');
-  var d=document.createElement('div');d.className='msg';
-  var av=document.createElement('div');av.className='mav';av.textContent='🤖';
-  var b=document.createElement('div');b.className='mbub';b.innerHTML=fmtMsg(text);
-  d.appendChild(av);d.appendChild(b);
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-
-function addUserMsg(text){
-  var c=document.getElementById('msgs');
-  var d=document.createElement('div');d.className='msg u';
-  var av=document.createElement('div');av.className='mav';av.textContent='👤';
-  var b=document.createElement('div');b.className='mbub';b.textContent=text;
-  d.appendChild(av);d.appendChild(b);
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-
-function addTyping(){
-  var c=document.getElementById('msgs');
-  var d=document.createElement('div');d.className='typing-wrap';d.id='typr';
-  var av=document.createElement('div');av.className='mav';av.textContent='🤖';
-  var b=document.createElement('div');b.className='typing-bub';
-  b.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
-  d.appendChild(av);d.appendChild(b);
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function removeTyping(){var e=document.getElementById('typr');if(e)e.remove();}
-
-function send(){
-  var inp=document.getElementById('msgIn');
-  var text=inp.value.trim();
-  if(!text)return;
-  inp.value='';inp.style.height='28px';
-  hideTranscript();
-  if(isSpeaking&&synth)synth.cancel();
-  addUserMsg(text);
-  chatHistory.push({role:'user',content:text});
-  document.getElementById('sendBtn').disabled=true;
-  setStatus('think');
-  addTyping();
-  var sys=SYSTEM+'\n\nCONTEXTO: '+( TOPIC_CONTEXTS[curTopic]||TOPIC_CONTEXTS.free);
-  var msgs=chatHistory.filter(function(m){return m.role!=='system';});
-  callGroq(msgs,sys)
-    .then(function(r){
-      removeTyping();
-      addAlexMsg(r);
-      chatHistory.push({role:'assistant',content:r});
-      speakText(r);
-      setStatus('idle');
-      document.getElementById('sendBtn').disabled=false;
-    })
-    .catch(function(e){
-      removeTyping();setStatus('idle');
-      addAlexMsg('Oops! Something went wrong 😅\n🇪🇸 ¡Ups! Algo salió mal. Error: '+e.message);
-      document.getElementById('sendBtn').disabled=false;
-    });
-}
-
-function startConversation(topic){
-  var sys=SYSTEM+'\n\nCONTEXTO: '+(TOPIC_CONTEXTS[topic]||TOPIC_CONTEXTS.free);
-  chatHistory.push({role:'system',content:sys});
-  setStatus('think');addTyping();
-  var openers={
-    free:'Start a natural friendly conversation. Greet warmly and ask something simple to get to know them.',
-    greetings:'Start by teaching greetings naturally, like you just met them.',
-    shopping:'Start a shopping conversation, like you\'re both at a store.',
-    restaurant:'Start like you\'re a waiter at a restaurant meeting the customer.',
-    travel:'Start like you\'re at an airport or hotel together.',
-    work:'Start a friendly work conversation, like meeting a new colleague.',
-    family:'Ask them about their family in a friendly natural way.',
-    health:'Start a conversation about health, like asking how they\'re feeling.',
-    weather:'Start by commenting on the weather and make it a natural conversation.',
-  };
-  callGroq([{role:'user',content:openers[topic]||openers.free}],sys)
-    .then(function(r){
-      removeTyping();setStatus('idle');
-      addAlexMsg(r);
-      chatHistory.push({role:'assistant',content:r});
-      speakText(r);
-    })
-    .catch(function(e){removeTyping();setStatus('idle');addAlexMsg('Hey! 👋\n🇪🇸 ¡Hola! Ready to practice English?\n🇪🇸 ¿Listo para practicar inglés?');});
-}
-
-async function callGroq(messages,system){
-  if(!API_KEY)throw new Error('Sin API Key');
-  var ms=[{role:'system',content:system}].concat(messages);
-  var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
-    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:ms,max_tokens:600,temperature:0.9})
-  });
-  if(!res.ok){var e=await res.json().catch(function(){return{};});throw new Error((e.error&&e.error.message)||'HTTP '+res.status);}
-  var d=await res.json();
-  return d.choices[0].message.content;
-}
-
-// ── UI HELPERS ───────────────────────────────
-function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function autoResize(el){el.style.height='28px';el.style.height=Math.min(el.scrollHeight,80)+'px';}
-
-// ── INIT ─────────────────────────────────────
-function iniciar(){
-  var v=document.getElementById('keyIn').value.trim();
-  if(!v){alert('Pega tu API Key de Groq primero.');return;}
-  API_KEY=v;
-  try{localStorage.setItem('alex_key',v);}catch(e){}
-  document.getElementById('setup').style.display='none';
-  setQuickReplies(QUICK_BY_TOPIC.free);
-  startConversation('free');
-}
-
-// Fix mobile keyboard resize
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',function(){
-    document.body.style.height=window.visualViewport.height+'px';
-  });
-}
-
+// ── INIT ───────────────────────────────────────// ── INIT ───────────────────────────────────────
 (function(){
-  var k='';try{k=localStorage.getItem('alex_key')||'';}catch(e){}
-  if(k){
-    API_KEY=k;
-    document.getElementById('setup').style.display='none';
-    setQuickReplies(QUICK_BY_TOPIC.free);
-    startConversation('free');
-  }
+  var saved='';try{saved=localStorage.getItem('eti_key')||'';}catch(e){}
+  loadFrase();
+  if(saved){
+    API_KEY=saved;loadState();checkStreak();
+    document.getElementById('tabBar').style.display='flex';
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    show('vHome');updateHome();updateXPBar();
+  }else{show('vSetup');}
 })();
 </script>
 </body>
